@@ -2,14 +2,14 @@
 # Purpose: Upstream synthetic-data preparation and benchmark computation.
 # Original source: 01_Syn_data.R
 # Figure/table scope: Fig1b; Fig1c; Fig1d; FigS2d; FigS2e
-# Data cohort: Syn_data. Inputs retain the original Data/Result hierarchy.
+# Data cohort: synthetic. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
 # Preserve named color mappings, annotation columns and statistical units.
 # See README.md and manuscript_consistency_review.md for release limitations.
 
-setwd(file.path(getOption("hla.data_root"), "Syn_data"))
+setwd(file.path(getOption("hla.data_root"), "synthetic"))
 rm(list = ls())
 
 library(Seurat)
@@ -63,7 +63,7 @@ for (cell_num_tmp in cell_num_select){
 }
 
 # HLA matrix读取######
-sampleInfo = read.csv("./Data/HLA_list/HLA-genotypes.csv",header=TRUE,row.names = 1)
+sampleInfo = read.csv(file.path(getOption("hla.data_root"), "synthetic", "HLA-genotypes.csv"),header=TRUE,row.names = 1)
 namelist=colnames(sampleInfo)
 length(namelist)
 # HLA list
@@ -140,11 +140,11 @@ for (cell_num_tmp in cell_num_select){
     
   }
 }
-write.csv(performance_list, "./Result/Demultiplex_performance.csv", row.names = FALSE)
+write.csv(performance_list, file.path(getOption("hla.data_root"), "synthetic", "Demultiplex_performance.csv"), row.names = FALSE)
 
 #绘制HLA-Splitter拆分结果统计图(cell number 50-2500)
 library(tidyr)
-df <- read.csv("./Result/Demultiplex_performance.csv")
+df <- read.csv(file.path(getOption("hla.data_root"), "synthetic", "Demultiplex_performance.csv"))
 df_long <- df %>%
   select(Cell_Number, Replicate, Correct_Ratio, Incorrect_Ratio, Undefined_Ratio) %>%
   pivot_longer(
@@ -457,4 +457,4 @@ p_combined <- ggplot(df, aes(x = cell_type)) +
 print(p_combined)
 ggsave("./Figures/HLA_vs_Accuracy_DualAxis.pdf", p_combined, width = 6, height = 4)
 
-write.csv(df,"./Result/demultiplex_result.csv")
+write.csv(df,file.path(getOption("hla.data_root"), "synthetic", "demultiplex_result.csv"))

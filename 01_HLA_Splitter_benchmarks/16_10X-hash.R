@@ -2,14 +2,14 @@
 # Purpose: Experimental cell-hashing validation.
 # Original source: 10X-hash.R
 # Figure/table scope: FigS3e; FigS3f; FigS3g; FigS3h
-# Data cohort: 10X-dataset. Inputs retain the original Data/Result hierarchy.
+# Data cohort: hash10x. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
 # Preserve named color mappings, annotation columns and statistical units.
 # See README.md and manuscript_consistency_review.md for release limitations.
 
-setwd(file.path(getOption("hla.data_root"), "10X-dataset"))
+setwd(file.path(getOption("hla.data_root"), "hash10x"))
 rm(list = ls())
 #remotes::install_github("satijalab/seurat", "seurat5", quiet = T)
 #remotes::install_github("mojaveazure/seurat-object", "seurat5")
@@ -146,7 +146,7 @@ saveRDS(scRNA,"./Rawdata/10X_hash_cells.rds")
 
 #基于HLA-Splitter样本拆分######
 # Read the saved object or source table used by this analysis.
-sampleInfo = read.csv("./Data/HLA_list/HLA-genotypes.csv",header=TRUE,row.names = 1)
+sampleInfo = read.csv(file.path(getOption("hla.data_root"), "hash10x", "HLA-genotypes.csv"),header=TRUE,row.names = 1)
 namelist=colnames(sampleInfo)
 length(namelist)
 HLA_list=list()
@@ -160,7 +160,7 @@ rownames(HLA_matrix) = paste0(barcodes$V1,"-1")
 
 #细胞样本来源标记
 outdir = "./Result/demultiplex/"
-scRNA = readRDS("./Result/10X_hash_cells.rds")
+scRNA = readRDS(file.path(getOption("hla.data_root"), "hash10x", "10X_hash_cells.rds"))
 sample_label=scRNA$HTO_classification
 barcodes = intersect(paste0(barcodes$V1,"-1"),names(sample_label))
 sample_label = sample_label[barcodes]

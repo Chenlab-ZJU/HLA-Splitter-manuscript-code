@@ -2,7 +2,7 @@
 # Purpose: Final benchmark / HLA-signal figures.
 # Original source: 13_revision_syn_figures_publication_style.R
 # Figure/table scope: Fig1e; Fig1f; Fig1g; Fig1h; FigS2a; FigS2b; FigS2c
-# Data cohort: Syn_data. Inputs retain the original Data/Result hierarchy.
+# Data cohort: synthetic. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -20,7 +20,7 @@ suppressPackageStartupMessages({
   library(scales)
 })
 
-project_dir <- file.path(getOption("hla.data_root"), "Syn_data")
+project_dir <- file.path(getOption("hla.data_root"), "synthetic")
 result_dir <- file.path(project_dir, "Result")
 figure_dir <- file.path(project_dir, "Figures")
 dir.create(figure_dir, showWarnings = FALSE, recursive = TRUE)
@@ -103,7 +103,7 @@ make_half_violin_density <- function(data, value_col, group_col, x_map, side = c
 }
 
 # Read the saved object or source table used by this analysis.
-demux <- read.csv(file.path(result_dir, "demultiplex_result.csv"), row.names = 1, check.names = FALSE)
+demux <- read.csv(file.path(getOption("hla.data_root"), "synthetic", "demultiplex_result.csv"), row.names = 1, check.names = FALSE)
 demux <- demux %>%
   mutate(class = factor(class, levels = c("Correct", "Undefined", "Incorrect"))) %>%
   filter(!is.na(class), !is.na(label), is.finite(HLA_count))

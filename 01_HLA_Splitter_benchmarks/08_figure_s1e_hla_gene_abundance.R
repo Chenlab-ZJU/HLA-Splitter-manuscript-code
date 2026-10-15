@@ -3,7 +3,7 @@
 # Purpose: Final benchmark / HLA-signal figures.
 # Original source: 14_revision_figure_s1e_hla_gene_abundance.R
 # Figure/table scope: Fig1e; Fig1f; Fig1g; Fig1h; FigS2a; FigS2b; FigS2c
-# Data cohort: Syn_data. Inputs retain the original Data/Result hierarchy.
+# Data cohort: synthetic. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -22,7 +22,7 @@ suppressPackageStartupMessages({
 
 project_dir <- Sys.getenv("SYN_PROJECT_DIR", unset = "")
 if (!nzchar(project_dir)) {
-  project_dir <- file.path(getOption("hla.data_root"), "Syn_data")
+  project_dir <- file.path(getOption("hla.data_root"), "synthetic")
 }
 project_dir <- gsub("\\\\", "/", project_dir)
 
@@ -99,12 +99,19 @@ read_one_pool <- function(pool_dir) {
   }))
 }
 
-pool_dirs <- list.dirs(hla_dir, full.names = TRUE, recursive = FALSE)
-if (length(pool_dirs) == 0) {
-  stop("No HLA count folders found in: ", hla_dir)
+abundance_source <- file.path(getOption("hla.data_root"), "synthetic", "Figure_S1e_HLA_gene_abundance_source.csv")
+if (file.exists(abundance_source)) {
+  # Reuse the final per-sample source table in the compact processed-data bundle.
+  hla_abundance <- read.csv(abundance_source, stringsAsFactors = FALSE)
+} else {
+  pool_dirs <- list.dirs(hla_dir, full.names = TRUE, recursive = FALSE)
+  if (length(pool_dirs) == 0) {
+    stop("Provide the HLA abundance source table or HLA count folders in: ", hla_dir)
+  }
+  hla_abundance <- bind_rows(lapply(pool_dirs, read_one_pool))
 }
 
-hla_abundance <- bind_rows(lapply(pool_dirs, read_one_pool)) %>%
+hla_abundance <- hla_abundance %>%
   filter(HLA_allele %in% locus_levels, is.finite(log10_mean_count_per_cell)) %>%
   mutate(HLA_allele = factor(HLA_allele, levels = locus_levels)) %>%
   arrange(HLA_allele, sample)
@@ -121,7 +128,7 @@ summary_df <- hla_abundance %>%
   )
 
 # Export the analysis source data for figure reproduction.
-write.csv(hla_abundance, file.path(result_dir, "Figure_S1e_HLA_gene_abundance_source.csv"), row.names = FALSE)
+write.csv(hla_abundance, file.path(getOption("hla.data_root"), "synthetic", "Figure_S1e_HLA_gene_abundance_source.csv"), row.names = FALSE)
 write.csv(summary_df, file.path(result_dir, "Figure_S1e_HLA_gene_abundance_summary.csv"), row.names = FALSE)
 
 set.seed(20260910)

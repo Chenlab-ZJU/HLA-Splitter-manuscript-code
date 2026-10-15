@@ -2,7 +2,7 @@
 # Purpose: Upstream cohort processing and reusable helper definitions.
 # Original source: 05_tcell_analysis.R
 # Figure/table scope: Fig2; FigS4; FigS5
-# Data cohort: 脑脊液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: csf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -20,7 +20,7 @@ rm(list = ls())
 source(file.path(getOption("hla.code_root"), "02_CSF_immune_profiling/01_setup_and_helpers.R"))
 
 # Read the saved object or source table used by this analysis.
-scRNA <- readRDS("./Result/CSF_scRNA.rds")
+scRNA <- readRDS(file.path(getOption("hla.data_root"), "csf", "CSF_scRNA.rds"))
 
 # 1. Tcell 提取与降维 ----------------------------------------------------------
 Tcell <- subset(scRNA, subset = Celltype %in% c("Naive T","CD4+ T", "CD8+ T", "IFN+ T", "Tregs", "Proliferating", "gd T"))
@@ -130,4 +130,4 @@ gene_matrix_t <- Tcell_avg@assays$RNA$scale.data %>% as.matrix()
 plot_heatmap_t_bulk <- pheatmap(gene_matrix_t[tcell_selected_gene, ], cluster_rows = TRUE, cluster_cols = FALSE, angle_col = 45, cellwidth = 40, cellheight = 15)
 ggsave("./Figures/Tcell_Heatmap_bulk.pdf", plot_heatmap_t_bulk, height = 10, width = 10)
 
-saveRDS(Tcell, "./Result/CSF_Tcell.rds")
+saveRDS(Tcell, file.path(getOption("hla.data_root"), "csf", "CSF_Tcell.rds"))

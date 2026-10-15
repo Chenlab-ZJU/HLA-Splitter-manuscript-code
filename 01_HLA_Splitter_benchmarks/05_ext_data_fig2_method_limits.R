@@ -3,7 +3,7 @@
 # Purpose: Final benchmark / HLA-signal figures.
 # Original source: 12_revision_ext_data_fig2_method_limits.R
 # Figure/table scope: Fig1e; Fig1f; Fig1g; Fig1h; FigS2a; FigS2b; FigS2c
-# Data cohort: Syn_data. Inputs retain the original Data/Result hierarchy.
+# Data cohort: synthetic. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -42,7 +42,7 @@ table_dir <- file.path(out_dir, "tables")
 dir.create(panel_dir, recursive = TRUE, showWarnings = FALSE)
 dir.create(table_dir, recursive = TRUE, showWarnings = FALSE)
 
-read_result <- function(file) readr::read_csv(file.path(syn_dir, "Result", file), show_col_types = FALSE)
+read_result <- function(file) readr::read_csv(file.path(syn_dir, file), show_col_types = FALSE)
 
 theme_nc <- function(base_size = 8) {
   theme_classic(base_size = base_size) +

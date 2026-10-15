@@ -2,7 +2,7 @@
 # Purpose: Final CSF figures from saved objects or source tables.
 # Original source: 16_revision_scRNA_all_major_celltype_heatmap.R
 # Figure/table scope: Fig2b; Fig2c; Fig2d; Fig2e; Fig2f; FigS4c; FigS4d; FigS4e; FigS5a; FigS5b; FigS5c; FigS5d; FigS5e; FigS5f
-# Data cohort: 脑脊液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: csf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -23,7 +23,7 @@ suppressPackageStartupMessages({
 
 project_dir <- Sys.getenv("CSF_PROJECT_DIR", unset = NA_character_)
 if (is.na(project_dir) || !nzchar(project_dir)) {
-  project_dir <- file.path(getOption("hla.data_root"), "\u8111\u810a\u6db2\u6837\u672c")
+  project_dir <- file.path(getOption("hla.data_root"), "csf")
 }
 project_dir <- gsub("\\\\", "/", project_dir)
 result_dir <- file.path(project_dir, "Result")
@@ -66,7 +66,7 @@ theme_pub <- function(base_size = 10.5) {
 }
 
 # Read the saved object or source table used by this analysis.
-sample_qc <- readRDS(file.path(result_dir, "CSF_scRNA.rds"))@meta.data %>%
+sample_qc <- readRDS(file.path(getOption("hla.data_root"), "csf", "CSF_scRNA.rds"))@meta.data %>%
   rownames_to_column("cell") %>%
   count(HLA_Splitter, Group, name = "n_cells") %>%
   rename(Sample = HLA_Splitter) %>%
@@ -77,7 +77,7 @@ valid_samples <- sample_qc$Sample[sample_qc$n_cells > 100]
 
 message("Loading all-sample CSF major celltype composition table...")
 major_comp_raw <- read.csv(
-  file.path(result_dir, "scRNA_major_celltype_sample_percent_revision.csv"),
+  file.path(getOption("hla.data_root"), "csf", "scRNA_major_celltype_sample_percent_revision.csv"),
   check.names = FALSE,
   stringsAsFactors = FALSE
 ) %>%

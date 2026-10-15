@@ -2,7 +2,7 @@
 # Purpose: Final CSF figures from saved objects or source tables.
 # Original source: 11b_revision_redraw_tcell_umap_from_csf_tcell.R
 # Figure/table scope: Fig2b; Fig2c; Fig2d; Fig2e; Fig2f; FigS4c; FigS4d; FigS4e; FigS5a; FigS5b; FigS5c; FigS5d; FigS5e; FigS5f
-# Data cohort: 脑脊液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: csf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -24,7 +24,7 @@ suppressPackageStartupMessages({
 
 project_dir <- Sys.getenv("CSF_PROJECT_DIR", unset = NA_character_)
 if (is.na(project_dir) || !nzchar(project_dir)) {
-  project_dir <- file.path(getOption("hla.data_root"), "\u8111\u810a\u6db2\u6837\u672c")
+  project_dir <- file.path(getOption("hla.data_root"), "csf")
 }
 figure_dir <- file.path(project_dir, "Figures")
 result_dir <- file.path(project_dir, "Result")
@@ -96,7 +96,7 @@ save_plot_safe <- function(plot, filename, width, height) {
 
 message("Loading CSF_Tcell.rds without reclustering...")
 # Read the saved object or source table used by this analysis.
-Tcell <- readRDS(file.path(result_dir, "CSF_Tcell.rds"))
+Tcell <- readRDS(file.path(getOption("hla.data_root"), "csf", "CSF_Tcell.rds"))
 
 Tcell$T_celltype <- unname(cluster_celltype_map[as.character(Tcell$seurat_clusters)])
 Tcell <- subset(Tcell, subset = !is.na(T_celltype) & T_celltype %in% names(tcell_colors))
@@ -147,7 +147,7 @@ write.csv(
     T_celltype = unname(cluster_celltype_map),
     color = unname(tcell_colors[unname(cluster_celltype_map)])
   ),
-  file.path(result_dir, "Tcell_revision_manual_cluster_reannotation.csv"),
+  file.path(getOption("hla.data_root"), "csf", "Tcell_revision_manual_cluster_reannotation.csv"),
   row.names = FALSE
 )
 

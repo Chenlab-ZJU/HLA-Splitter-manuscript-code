@@ -2,7 +2,7 @@
 # Purpose: Transitive shared function dependency.
 # Original source: plot_violin_comparison.R
 # Figure/table scope: Referenced by analysis scripts
-# Data cohort: shared. Inputs retain the original Data/Result hierarchy.
+# Data cohort: shared. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.

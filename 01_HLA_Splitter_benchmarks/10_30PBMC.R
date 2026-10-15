@@ -2,14 +2,14 @@
 # Purpose: Upstream HLA typing, resolution and PBMC demultiplexing.
 # Original source: 30PBMC.R
 # Figure/table scope: FigS1; FigS2f; Supplementary Tables 1 and 9
-# Data cohort: 30PBMC. Inputs retain the original Data/Result hierarchy.
+# Data cohort: pbmc30. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
 # Preserve named color mappings, annotation columns and statistical units.
 # See README.md and manuscript_consistency_review.md for release limitations.
 
-setwd(file.path(getOption("hla.data_root"), "30PBMC"))
+setwd(file.path(getOption("hla.data_root"), "pbmc30"))
 rm(list = ls())
 
 library(Seurat)

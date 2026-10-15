@@ -2,7 +2,7 @@
 # Purpose: Upstream cohort processing and reusable helper definitions.
 # Original source: 01_data_preprocessing.R
 # Figure/table scope: Fig2; FigS4; FigS5
-# Data cohort: 脑脊液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: csf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.

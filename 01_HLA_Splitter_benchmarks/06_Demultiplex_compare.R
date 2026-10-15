@@ -3,7 +3,7 @@
 # Purpose: Final benchmark / HLA-signal figures.
 # Original source: 03_Demultiplex_compare.R
 # Figure/table scope: Fig1e; Fig1f; Fig1g; Fig1h; FigS2a; FigS2b; FigS2c
-# Data cohort: Syn_data. Inputs retain the original Data/Result hierarchy.
+# Data cohort: synthetic. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -121,7 +121,7 @@ read_required_csv <- function(path) {
 }
 
 # Sequencing depth benchmark retained from the original script.
-seq_depth_df <- read_required_csv(file.path(project_dir, "Result", "SeqDepth_Benchmark.csv"))
+seq_depth_df <- read_required_csv(file.path(getOption("hla.data_root"), "synthetic", "SeqDepth_Benchmark.csv"))
 seq_depth_df$Sample <- factor(
   seq_depth_df$Sample,
   levels = c(
@@ -152,7 +152,7 @@ p_seq_depth <- ggplot(seq_depth_df, aes(x = Depth_RPC, y = Accuracy, color = Sam
 save_pub_plot(p_seq_depth, "Seqdepth_Benchmark_Plots", width = 6.2, height = 4.4)
 
 # Cell-number benchmark across demultiplexing tools.
-cell_benchmark_raw <- read_required_csv(file.path(project_dir, "Result", "Cellnum_benchmark.csv"))
+cell_benchmark_raw <- read_required_csv(file.path(getOption("hla.data_root"), "synthetic", "Cellnum_benchmark.csv"))
 
 cell_benchmark <- cell_benchmark_raw %>%
   mutate(across(everything(), ~ ifelse(is.na(.x), 0, .x))) %>%
@@ -799,7 +799,7 @@ p_integrated <- ggplot() +
 save_pub_plot(p_integrated, "Combined_Benchmark_Plots", width = 9.2, height = 3.4)
 
 # HLA resolution benchmark retained from the original script.
-hla_resolution <- read_required_csv(file.path(project_dir, "Result", "HLA_Resolution_benchmark.csv"))
+hla_resolution <- read_required_csv(file.path(getOption("hla.data_root"), "synthetic", "HLA_Resolution_benchmark.csv"))
 
 hla_tool_levels <- c("HLA-Splitter_1field", "HLA-Splitter_2field", "HLA-Splitter_3field")
 hla_tool_colors <- c(

@@ -2,7 +2,7 @@
 # Purpose: Required intermediate source-table / annotation generation.
 # Original source: 08_revision_scRNA_celltype_composition_plots.R
 # Figure/table scope: Fig2; FigS4; FigS5
-# Data cohort: 脑脊液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: csf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -37,7 +37,7 @@ result_dir <- file.path(project_dir, "Result")
 dir.create(figure_dir, recursive = TRUE, showWarnings = FALSE)
 
 # Read the saved object or source table used by this analysis.
-scRNA <- readRDS(file.path(result_dir, "CSF_scRNA.rds"))
+scRNA <- readRDS(file.path(getOption("hla.data_root"), "csf", "CSF_scRNA.rds"))
 
 group_levels <- c("Metastases", "Hemorrhage", "Encephalitis")
 celltype_levels <- c(
@@ -140,8 +140,8 @@ major_comp <- meta %>%
   )
 
 # Export the analysis source data for figure reproduction.
-write_csv(celltype_comp, file.path(result_dir, "scRNA_celltype_sample_percent_revision.csv"))
-write_csv(major_comp, file.path(result_dir, "scRNA_major_celltype_sample_percent_revision.csv"))
+write_csv(celltype_comp, file.path(getOption("hla.data_root"), "csf", "scRNA_celltype_sample_percent_revision.csv"))
+write_csv(major_comp, file.path(getOption("hla.data_root"), "csf", "scRNA_major_celltype_sample_percent_revision.csv"))
 
 format_kw_p <- function(p) {
   ifelse(is.na(p), "KW p=NA", ifelse(p < 0.001, "KW p<0.001", paste0("KW p=", signif(p, 2))))

@@ -2,7 +2,7 @@
 # Purpose: Final CSF figures from saved objects or source tables.
 # Original source: 13_revision_tcell_subtype_proportion_compare.R
 # Figure/table scope: Fig2b; Fig2c; Fig2d; Fig2e; Fig2f; FigS4c; FigS4d; FigS4e; FigS5a; FigS5b; FigS5c; FigS5d; FigS5e; FigS5f
-# Data cohort: 脑脊液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: csf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -96,7 +96,7 @@ write_csv_safe <- function(x, path) {
 }
 
 suppressPackageStartupMessages(library(Seurat))
-manual_annotation_path <- file.path(result_dir, "Tcell_revision_manual_cluster_reannotation.csv")
+manual_annotation_path <- file.path(getOption("hla.data_root"), "csf", "Tcell_revision_manual_cluster_reannotation.csv")
 if (!file.exists(manual_annotation_path)) {
   stop("Missing Tcell_revision_manual_cluster_reannotation.csv. Please run 11b_revision_redraw_tcell_umap_from_csf_tcell.R first.")
 }
@@ -105,7 +105,7 @@ manual_annotation <- read_csv_safe(manual_annotation_path) %>%
   filter(!is.na(Cluster), !is.na(T_celltype), T_celltype %in% tcell_levels)
 
 # Read the saved object or source table used by this analysis.
-Tcell <- readRDS(file.path(result_dir, "CSF_Tcell.rds"))
+Tcell <- readRDS(file.path(getOption("hla.data_root"), "csf", "CSF_Tcell.rds"))
 meta <- Tcell@meta.data %>%
   as_tibble(rownames = "cell") %>%
   transmute(

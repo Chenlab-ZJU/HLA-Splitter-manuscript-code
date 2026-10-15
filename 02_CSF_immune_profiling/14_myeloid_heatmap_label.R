@@ -3,7 +3,7 @@
 # Purpose: Final CSF figures from saved objects or source tables.
 # Original source: 10c_revision_myeloid_heatmap_label.R
 # Figure/table scope: Fig2b; Fig2c; Fig2d; Fig2e; Fig2f; FigS4c; FigS4d; FigS4e; FigS5a; FigS5b; FigS5c; FigS5d; FigS5e; FigS5f
-# Data cohort: 脑脊液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: csf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -65,7 +65,7 @@ group_levels <- c("Metastases", "Hemorrhage", "Encephalitis")
 
 # Read the saved object or source table used by this analysis.
 heat_df <- read.csv(
-  file.path(result_dir, "Myeloid_revision_group_DEG_heatmap_source.csv"),
+  file.path(getOption("hla.data_root"), "csf", "Myeloid_revision_group_DEG_heatmap_source.csv"),
   check.names = FALSE
 ) %>%
   mutate(

@@ -2,7 +2,7 @@
 # Purpose: Final nanopore typing and reference-concordance figures.
 # Original source: 15_revision_HLA_TSNE_ONT_SBT_publication.R
 # Figure/table scope: FigS1c; FigS1d; FigS1e; FigS1f
-# Data cohort: 30PBMC. Inputs retain the original Data/Result hierarchy.
+# Data cohort: pbmc30. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -21,7 +21,7 @@ suppressPackageStartupMessages({
 
 project_dir <- Sys.getenv("PBMC30_PROJECT_DIR", unset = NA_character_)
 if (is.na(project_dir) || !nzchar(project_dir)) {
-  project_dir <- file.path(getOption("hla.data_root"), "30PBMC")
+  project_dir <- file.path(getOption("hla.data_root"), "pbmc30")
 }
 project_dir <- gsub("\\\\", "/", project_dir)
 data_dir <- file.path(project_dir, "Data")
@@ -104,7 +104,7 @@ zscore_positive_hla <- function(mat) {
   norm
 }
 
-source_file <- file.path(result_dir, "HLA_TSNE_ONT_SBT_revision_source.csv")
+source_file <- file.path(getOption("hla.data_root"), "pbmc30", "HLA_TSNE_ONT_SBT_revision_source.csv")
 force_tsne <- tolower(Sys.getenv("FORCE_HLA_TSNE_ONT_SBT", unset = "false")) %in% c("true", "1", "yes")
 if (file.exists(source_file) && !force_tsne) {
   message("Using cached HLA t-SNE source: ", source_file)

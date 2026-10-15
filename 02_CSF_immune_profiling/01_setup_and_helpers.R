@@ -2,7 +2,7 @@
 # Purpose: Upstream cohort processing and reusable helper definitions.
 # Original source: 00_setup_and_helpers.R
 # Figure/table scope: Fig2; FigS4; FigS5
-# Data cohort: 脑脊液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: csf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -17,7 +17,7 @@
 # Description: 加载依赖包、设置全局变量、加载外部工具脚本及定义辅助函数
 # ==============================================================================
 
-WORK_DIR <- file.path(getOption("hla.data_root"), "\u8111\u810a\u6db2\u6837\u672c")
+WORK_DIR <- file.path(getOption("hla.data_root"), "csf")
 setwd(WORK_DIR)
 set.seed(2026) # 设定随机种子，保证UMAP和聚类结果可重复
 

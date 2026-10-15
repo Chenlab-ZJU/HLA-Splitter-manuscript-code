@@ -2,7 +2,7 @@
 # Purpose: Final nanopore typing and reference-concordance figures.
 # Original source: 14_revision_nanopore_hla_publication_plots.R
 # Figure/table scope: FigS1c; FigS1d; FigS1e; FigS1f
-# Data cohort: 30PBMC. Inputs retain the original Data/Result hierarchy.
+# Data cohort: pbmc30. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -25,7 +25,8 @@ file_arg <- grep("^--file=", commandArgs(FALSE), value = TRUE)
 script_path <- sub("^--file=", "", file_arg[1] %||% file.path(getwd(), "14_revision_nanopore_hla_publication_plots.R"))
 script_dir <- dirname(normalizePath(script_path, winslash = "/", mustWork = FALSE))
 pbmc_dir <- getOption("hla.cohort_dir")
-nanopore_dir <- file.path(pbmc_dir, "Data", "HLA_list", "nanopore")
+nanopore_dir <- file.path(pbmc_dir, "Result", "nanopore")
+dir.create(nanopore_dir, recursive = TRUE, showWarnings = FALSE)
 
 hla_levels <- c("A", "B", "C", "DRB1", "DQB1", "DPB1")
 hla_colors <- c(
@@ -79,7 +80,7 @@ save_plot <- function(plot, file_base, width = 5.2, height = 4.0) {
 }
 
 # Read the saved object or source table used by this analysis.
-typing <- read_csv(file.path(nanopore_dir, "HLAtyping result.csv"), show_col_types = FALSE)
+typing <- read_csv(file.path(getOption("hla.data_root"), "pbmc30", "HLA_typing.csv"), show_col_types = FALSE)
 
 typing_long <- typing %>%
   pivot_longer(
@@ -146,7 +147,7 @@ p_accuracy <- ggplot(accuracy_df, aes(x = HLA_allele, y = Accuracy_pct, fill = R
     legend.title = element_text(face = "bold")
   )
 
-coverage <- read_csv(file.path(nanopore_dir, "coverage.csv"), show_col_types = FALSE)
+coverage <- read_csv(file.path(getOption("hla.data_root"), "pbmc30", "HLA_locus_coverage.csv"), show_col_types = FALSE)
 
 coverage_long <- coverage %>%
   pivot_longer(

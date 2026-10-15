@@ -3,7 +3,7 @@
 # Purpose: Final CSF figures from saved objects or source tables.
 # Original source: 10b_revision_myeloid_module_score_compare_layout.R
 # Figure/table scope: Fig2b; Fig2c; Fig2d; Fig2e; Fig2f; FigS4c; FigS4d; FigS4e; FigS5a; FigS5b; FigS5c; FigS5d; FigS5e; FigS5f
-# Data cohort: 脑脊液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: csf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -79,7 +79,7 @@ save_plot_safe <- function(plot, filename, width, height) {
 }
 
 # Read the saved object or source table used by this analysis.
-sample_qc <- readRDS(file.path(result_dir, "CSF_scRNA.rds"))@meta.data %>%
+sample_qc <- readRDS(file.path(getOption("hla.data_root"), "csf", "CSF_scRNA.rds"))@meta.data %>%
   rownames_to_column("cell") %>%
   count(HLA_Splitter, Group, name = "n_cells") %>%
   rename(Sample = HLA_Splitter) %>%
@@ -89,7 +89,7 @@ write.csv(sample_qc, file.path(result_dir, "CSF_sample_HLA_Splitter_cell_count_q
 valid_samples <- sample_qc$Sample[sample_qc$n_cells > 100]
 
 module_score_sample <- read.csv(
-  file.path(result_dir, "Myeloid_revision_functional_module_sample_scores.csv"),
+  file.path(getOption("hla.data_root"), "csf", "Myeloid_revision_functional_module_sample_scores.csv"),
   check.names = FALSE
 ) %>%
   filter(Sample %in% valid_samples) %>%

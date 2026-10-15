@@ -2,7 +2,7 @@
 # Purpose: Required intermediate source-table / annotation generation.
 # Original source: 09_revision_myeloid_reanalysis.R
 # Figure/table scope: Fig2; FigS4; FigS5
-# Data cohort: 脑脊液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: csf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -135,7 +135,7 @@ format_p <- function(p) {
 }
 
 # Read the saved object or source table used by this analysis.
-scRNA <- readRDS(file.path(result_dir, "CSF_scRNA.rds"))
+scRNA <- readRDS(file.path(getOption("hla.data_root"), "csf", "CSF_scRNA.rds"))
 myeloid_source <- c("Macrophages", "Monocytes", "Microglia-like")
 myeloid_source <- intersect(myeloid_source, unique(as.character(scRNA$Celltype)))
 Myeloid <- subset(scRNA, subset = Celltype %in% myeloid_source)
@@ -438,5 +438,5 @@ plot_metric_box <- function(metric, y_label, filename) {
 plot_metric_box("mean_M1", "Mean M1 module score", "Myeloid_Polarization_M1")
 plot_metric_box("mean_M2", "Mean M2 module score", "Myeloid_Polarization_M2")
 
-saveRDS(Myeloid, file.path(result_dir, "CSF_Myeloid_revision.rds"))
+saveRDS(Myeloid, file.path(getOption("hla.data_root"), "csf", "CSF_Myeloid_revision.rds"))
 message("Updated myeloid re-analysis using reduction: ", reduction_use)

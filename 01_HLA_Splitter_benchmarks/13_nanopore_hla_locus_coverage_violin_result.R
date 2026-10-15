@@ -2,7 +2,7 @@
 # Purpose: Final nanopore typing and reference-concordance figures.
 # Original source: 14b_revision_nanopore_hla_locus_coverage_violin_result.R
 # Figure/table scope: FigS1c; FigS1d; FigS1e; FigS1f
-# Data cohort: 30PBMC. Inputs retain the original Data/Result hierarchy.
+# Data cohort: pbmc30. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -16,7 +16,7 @@ suppressPackageStartupMessages({
   library(ggbeeswarm)
 })
 
-project_dir <- file.path(getOption("hla.data_root"), "30PBMC")
+project_dir <- file.path(getOption("hla.data_root"), "pbmc30")
 project_dir <- gsub("\\\\", "/", project_dir)
 nanopore_dir <- file.path(project_dir, "Result", "nanopore")
 dir.create(nanopore_dir, recursive = TRUE, showWarnings = FALSE)
@@ -67,7 +67,7 @@ save_plot_safe <- function(plot, filename, width, height) {
 
 message("Reading nanopore coverage from Result/nanopore...")
 # Read the saved object or source table used by this analysis.
-coverage <- read.csv(file.path(nanopore_dir, "coverage.csv"), check.names = FALSE)
+coverage <- read.csv(file.path(getOption("hla.data_root"), "pbmc30", "Genome_coverage.csv"), check.names = FALSE)
 
 coverage_long <- coverage %>%
   select(any_of(c("SampleName", "SampleID")), matches("^(A|B|C|DRB1|DQB1|DPB1)_")) %>%

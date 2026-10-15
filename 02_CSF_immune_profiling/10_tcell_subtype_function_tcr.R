@@ -2,7 +2,7 @@
 # Purpose: Required intermediate source-table / annotation generation.
 # Original source: 11_revision_tcell_subtype_function_tcr.R
 # Figure/table scope: Fig2; FigS4; FigS5
-# Data cohort: 脑脊液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: csf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -150,12 +150,12 @@ score_signature <- function(object, signatures, prefix) {
 }
 
 # Read the saved object or source table used by this analysis.
-previous_tcell <- readRDS(file.path(result_dir, "CSF_Tcell.rds"))
+previous_tcell <- readRDS(file.path(getOption("hla.data_root"), "csf", "CSF_Tcell.rds"))
 previous_annotation <- previous_tcell@meta.data %>%
   as_tibble(rownames = "cell") %>%
   transmute(cell, previous_T_celltype = as.character(T_celltype))
 
-scRNA <- readRDS(file.path(result_dir, "CSF_scRNA.rds"))
+scRNA <- readRDS(file.path(getOption("hla.data_root"), "csf", "CSF_scRNA.rds"))
 Tcell <- subset(scRNA, subset = Celltype %in% c("Naive T", "CD4+ T", "CD8+ T", "IFN+ T", "Tregs", "Proliferating", "gd T"))
 Tcell@meta.data <- Tcell@meta.data %>%
   as_tibble(rownames = "cell") %>%

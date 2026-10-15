@@ -2,7 +2,7 @@
 # Purpose: Upstream cohort processing and reusable helper definitions.
 # Original source: 03_global_clustering.R
 # Figure/table scope: Fig2; FigS4; FigS5
-# Data cohort: 脑脊液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: csf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -25,7 +25,7 @@ scRNA_Intergrate <- readRDS("Result/CSF_scRNA_Intergrate.rds")
 
 # 1. 数据筛选与重新聚类 --------------------------------------------------------
 scRNA <- subset(scRNA_Intergrate, subset = !HLA_Splitter %in% c("Doublets", "Undefined"))
-SampleInfo <- read.csv("./Data/SampleInfo.csv")
+SampleInfo <- read.csv(file.path(getOption("hla.data_root"), "csf", "SampleInfo.csv"))
 Sample_levels <- c(mixedsort(SampleInfo$Patient.ID))
 scRNA$Group = factor(scRNA$Group, setdiff(scRNA$Group,c("Undefined","Doublet")))
 # 
@@ -127,4 +127,4 @@ plot_top_pseudobulk(scRNA, CELLDEG, group_by = "Group",sample_col = "HLA_Splitte
                     top_n_lollipop = 20, top_n_bardot = 10, my_colors = GROUP_COLORS)
 
 # 保存                                           
-saveRDS(scRNA, "./Result/CSF_scRNA.rds")
+saveRDS(scRNA, file.path(getOption("hla.data_root"), "csf", "CSF_scRNA.rds"))

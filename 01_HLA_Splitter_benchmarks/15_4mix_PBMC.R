@@ -2,14 +2,14 @@
 # Purpose: Experimental sorted-cell mixture validation.
 # Original source: 4mix_PBMC.R
 # Figure/table scope: FigS3a; FigS3b; FigS3c; FigS3d
-# Data cohort: 4mix_PBMC. Inputs retain the original Data/Result hierarchy.
+# Data cohort: pbmc4. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
 # Preserve named color mappings, annotation columns and statistical units.
 # See README.md and manuscript_consistency_review.md for release limitations.
 
-setwd(file.path(getOption("hla.data_root"), "4mix_PBMC"))
+setwd(file.path(getOption("hla.data_root"), "pbmc4"))
 rm(list = ls())
 
 library(Seurat)
@@ -165,7 +165,7 @@ saveRDS(scRNA,"./Rawdata/4mix_PBMC.rds")
 #基于HLA-Splitter样本拆分######
 # 读取HLAcounts信息
 # Read the saved object or source table used by this analysis.
-sampleInfo = read.csv("./Data/HLA_list/HLA-genotypes.csv",header=TRUE,row.names = 1)
+sampleInfo = read.csv(file.path(getOption("hla.data_root"), "pbmc4", "HLA-genotypes.csv"),header=TRUE,row.names = 1)
 namelist=colnames(sampleInfo)
 length(namelist)
 # HLA list
@@ -181,7 +181,7 @@ rownames(HLA_matrix) = paste0(barcodes$V1)
 
 #细胞样本来源标记
 outdir = "./Result/demultiplex/"
-scRNA = readRDS("./Result/4mix_PBMC.rds")
+scRNA = readRDS(file.path(getOption("hla.data_root"), "pbmc4", "4mix_PBMC.rds"))
 sample_label = scRNA$celltype_major
 barcodes = intersect(barcodes$V1,names(sample_label))
 sample_label = sample_label[barcodes]

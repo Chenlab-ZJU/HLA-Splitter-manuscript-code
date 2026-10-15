@@ -3,7 +3,7 @@
 # Purpose: Final CSF figures from saved objects or source tables.
 # Original source: 09b_revision_myeloid_umap_cluster_merge_bc_legend.R
 # Figure/table scope: Fig2b; Fig2c; Fig2d; Fig2e; Fig2f; FigS4c; FigS4d; FigS4e; FigS5a; FigS5b; FigS5c; FigS5d; FigS5e; FigS5f
-# Data cohort: 脑脊液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: csf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -85,7 +85,7 @@ save_plot_safe <- function(plot, filename, width, height) {
 
 message("Loading existing myeloid object...")
 # Read the saved object or source table used by this analysis.
-Myeloid <- readRDS(file.path(result_dir, "CSF_Myeloid_revision.rds"))
+Myeloid <- readRDS(file.path(getOption("hla.data_root"), "csf", "CSF_Myeloid_revision.rds"))
 
 umap_mat <- Embeddings(Myeloid, "umap")
 umap_df <- as.data.frame(umap_mat) %>%

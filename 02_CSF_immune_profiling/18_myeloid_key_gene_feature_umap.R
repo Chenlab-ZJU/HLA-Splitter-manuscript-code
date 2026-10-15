@@ -2,7 +2,7 @@
 # Purpose: Final CSF figures from saved objects or source tables.
 # Original source: 10e_revision_myeloid_key_gene_feature_umap.R
 # Figure/table scope: Fig2b; Fig2c; Fig2d; Fig2e; Fig2f; FigS4c; FigS4d; FigS4e; FigS5a; FigS5b; FigS5c; FigS5d; FigS5e; FigS5f
-# Data cohort: 脑脊液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: csf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -22,7 +22,7 @@ suppressPackageStartupMessages({
 
 project_dir <- Sys.getenv("CSF_PROJECT_DIR", unset = NA_character_)
 if (is.na(project_dir) || !nzchar(project_dir)) {
-  project_dir <- file.path(getOption("hla.data_root"), "\u8111\u810a\u6db2\u6837\u672c")
+  project_dir <- file.path(getOption("hla.data_root"), "csf")
 }
 figure_dir <- file.path(project_dir, "Figures")
 result_dir <- file.path(project_dir, "Result")
@@ -65,7 +65,7 @@ save_plot_safe <- function(plot, filename, width, height) {
 
 message("Loading existing myeloid object...")
 # Read the saved object or source table used by this analysis.
-Myeloid <- readRDS(file.path(result_dir, "CSF_Myeloid_revision.rds"))
+Myeloid <- readRDS(file.path(getOption("hla.data_root"), "csf", "CSF_Myeloid_revision.rds"))
 DefaultAssay(Myeloid) <- "RNA"
 
 genes_present <- intersect(key_plot_genes, rownames(Myeloid))

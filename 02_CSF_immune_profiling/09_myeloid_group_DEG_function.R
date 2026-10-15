@@ -2,7 +2,7 @@
 # Purpose: Required intermediate source-table / annotation generation.
 # Original source: 10_revision_myeloid_group_DEG_function.R
 # Figure/table scope: Fig2; FigS4; FigS5
-# Data cohort: 脑脊液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: csf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -101,7 +101,7 @@ format_p <- function(p) {
 }
 
 # Read the saved object or source table used by this analysis.
-Myeloid <- readRDS(file.path(result_dir, "CSF_Myeloid_revision.rds"))
+Myeloid <- readRDS(file.path(getOption("hla.data_root"), "csf", "CSF_Myeloid_revision.rds"))
 DefaultAssay(Myeloid) <- "RNA"
 Myeloid$Group <- factor(as.character(Myeloid$Group), levels = group_levels)
 
@@ -129,7 +129,7 @@ sample_expr <- cell_expr_long %>%
     .groups = "drop"
   )
 # Export the analysis source data for figure reproduction.
-write_csv(sample_expr, file.path(result_dir, "Myeloid_revision_key_gene_sample_expression.csv"))
+write_csv(sample_expr, file.path(getOption("hla.data_root"), "csf", "Myeloid_revision_key_gene_sample_expression.csv"))
 
 gene_kw <- sample_expr %>%
   group_by(gene) %>%
@@ -229,7 +229,7 @@ heat_df <- as.data.frame(avg_z) %>%
     module_gene = factor(module_gene, levels = rev(module_df$module_gene)),
     Group = factor(Group, levels = group_levels)
   )
-write_csv(heat_df, file.path(result_dir, "Myeloid_revision_group_DEG_heatmap_source.csv"))
+write_csv(heat_df, file.path(getOption("hla.data_root"), "csf", "Myeloid_revision_group_DEG_heatmap_source.csv"))
 write_csv(module_df, file.path(result_dir, "Myeloid_revision_functional_gene_modules.csv"))
 
 p_heat <- ggplot(heat_df, aes(Group, module_gene, fill = z_score)) +
@@ -274,7 +274,7 @@ module_score_sample <- module_score_cell %>%
   mutate(Group = factor(as.character(Group), levels = group_levels))
 
 write_csv(module_score_cell, file.path(result_dir, "Myeloid_revision_functional_module_cell_scores.csv"))
-write_csv(module_score_sample, file.path(result_dir, "Myeloid_revision_functional_module_sample_scores.csv"))
+write_csv(module_score_sample, file.path(getOption("hla.data_root"), "csf", "Myeloid_revision_functional_module_sample_scores.csv"))
 
 module_kw <- module_score_sample %>%
   group_by(module) %>%

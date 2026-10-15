@@ -2,14 +2,14 @@
 # Purpose: Upstream HLA typing, resolution and PBMC demultiplexing.
 # Original source: Nanopore.R
 # Figure/table scope: FigS1; FigS2f; Supplementary Tables 1 and 9
-# Data cohort: 30PBMC. Inputs retain the original Data/Result hierarchy.
+# Data cohort: pbmc30. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
 # Preserve named color mappings, annotation columns and statistical units.
 # See README.md and manuscript_consistency_review.md for release limitations.
 
-setwd(file.path(getOption("hla.data_root"), "30PBMC"))
+setwd(file.path(getOption("hla.data_root"), "pbmc30"))
 rm(list = ls())
 
 # 确保加载所有必需的包
@@ -24,7 +24,7 @@ library(tidyr)
 # 1. 导入数据并处理 (Part 1: 1-field & 2-field 分级评估)
 # ==========================================
 # Read the saved object or source table used by this analysis.
-df <- read.csv("./Data/nanopore/HLAtyping result.csv")
+df <- read.csv(file.path(getOption("hla.data_root"), "pbmc30", "HLA_typing.csv"))
 
 # 辅助函数 1：提取 2-field 精度 (例如 A*11:01:01 -> A*11:01)
 truncate_to_2field <- function(allele) {

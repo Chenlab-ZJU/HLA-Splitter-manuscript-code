@@ -2,7 +2,7 @@
 # Purpose: Upstream synthetic-data preparation and benchmark computation.
 # Original source: 00_scRNA_analysis.R
 # Figure/table scope: Fig1b; Fig1c; Fig1d; FigS2d; FigS2e
-# Data cohort: Syn_data. Inputs retain the original Data/Result hierarchy.
+# Data cohort: synthetic. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -12,7 +12,7 @@
 # ==============================================================================
 # 0. 环境设置与依赖加载
 # ==============================================================================
-setwd(file.path(getOption("hla.data_root"), "Syn_data"))
+setwd(file.path(getOption("hla.data_root"), "synthetic"))
 rm(list = ls())
 
 library(Seurat)

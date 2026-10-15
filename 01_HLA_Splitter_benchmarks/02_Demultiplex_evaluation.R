@@ -2,7 +2,7 @@
 # Purpose: Shared algorithm / evaluation function.
 # Original source: Demultiplex_evaluation.R
 # Figure/table scope: Fig1c; Fig1d; FigS3
-# Data cohort: Syn_data. Inputs retain the original Data/Result hierarchy.
+# Data cohort: synthetic. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.

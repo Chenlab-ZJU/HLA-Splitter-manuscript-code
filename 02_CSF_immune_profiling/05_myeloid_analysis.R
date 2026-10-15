@@ -2,7 +2,7 @@
 # Purpose: Upstream cohort processing and reusable helper definitions.
 # Original source: 04_myeloid_analysis.R
 # Figure/table scope: Fig2; FigS4; FigS5
-# Data cohort: 脑脊液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: csf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -20,7 +20,7 @@ rm(list = ls())
 source(file.path(getOption("hla.code_root"), "02_CSF_immune_profiling/01_setup_and_helpers.R"))
 
 # Read the saved object or source table used by this analysis.
-scRNA <- readRDS("./Result/CSF_scRNA.rds")
+scRNA <- readRDS(file.path(getOption("hla.data_root"), "csf", "CSF_scRNA.rds"))
 
 # 1. Myeloid 数据提取与降维 ----------------------------------------------------
 Myeloid <- subset(scRNA, subset = Celltype %in% c("Macrophages", "Monocytes"))
@@ -130,7 +130,7 @@ ggsave("./Figures/Myeloid_Polarization.pdf", p_margin, width = 8, height = 6)
 # 3. GSVA 免疫通路分析 ---------------------------------------------------------
 Myeloid_avg <- AverageExpression(Myeloid, group.by = "Group", assays = "RNA", return.seurat = TRUE)
 gene_matrix <- Myeloid_avg@assays$RNA$scale.data %>% as.matrix()
-gmtFile <- read.gmt(file.path(file.path(getOption("hla.data_root"), "MSigDB"), "KEGG_2021_Human.txt"))
+gmtFile <- read.gmt(file.path(file.path(getOption("hla.data_root"), "references"), "KEGG_2021_Human.txt"))
 genesets <- lapply(unique(gmtFile$term), function(x) gmtFile$gene[gmtFile$term == x])
 names(genesets) <- unique(gmtFile$term)
 
