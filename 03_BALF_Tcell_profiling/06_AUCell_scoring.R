@@ -2,7 +2,7 @@
 # Purpose: Upstream BALF processing, repertoire and disease-signature computation.
 # Original source: 05_AUCell_scoring.R
 # Figure/table scope: Fig3; FigS6; Supplementary Table 13
-# Data cohort: 肺泡灌洗液. Inputs retain the original Data/Result hierarchy.
+# Data cohort: balf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -16,8 +16,8 @@
 rm(list = ls())
 source(file.path(getOption("hla.code_root"), "03_BALF_Tcell_profiling/01_setup_and_helpers.R"))
 # Read the saved object or source table used by this analysis.
-Tcell <- readRDS("./Result/lavage_Tcell.rds")
-Sample_Info <- read.csv("./Data/SampleInfo.csv")
+Tcell <- readRDS(file.path(getOption("hla.data_root"), "balf", "lavage_Tcell.rds"))
+Sample_Info <- read.csv(file.path(getOption("hla.data_root"), "balf", "SampleInfo.csv"))
 
 # 确保只保留目标分组并去除无用因子水平
 cell_subset <- subset(Tcell, subset = Group %in% c("LC", "ILD", "CAP"))

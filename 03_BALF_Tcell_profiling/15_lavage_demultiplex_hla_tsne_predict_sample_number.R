@@ -2,7 +2,7 @@
 # Purpose: Final BALF figures from saved objects and signatures.
 # Original source: 23_revision_lavage_demultiplex_hla_tsne_predict_sample_number.R
 # Figure/table scope: Fig3b; Fig3c; Fig3d; Fig3e; Fig3f; Fig3g; Fig3h; Fig3i; FigS6a; FigS6b; FigS6c; FigS6d; FigS6e; FigS6f; FigS6g; FigS6h
-# Data cohort: 肺泡灌洗液. Inputs retain the original Data/Result hierarchy.
+# Data cohort: balf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -23,7 +23,7 @@ suppressPackageStartupMessages({
 
 project_dir <- Sys.getenv("LAVAGE_PROJECT_DIR", unset = NA_character_)
 if (is.na(project_dir) || !nzchar(project_dir)) {
-  project_dir <- file.path(getOption("hla.data_root"), "\u80ba\u6ce1\u704c\u6d17\u6db2")
+  project_dir <- file.path(getOption("hla.data_root"), "balf")
 }
 project_dir <- gsub("\\\\", "/", project_dir)
 data_dir <- file.path(project_dir, "Data")
@@ -109,74 +109,83 @@ read_demux <- function(batch, batch_id) {
     )
 }
 
-message("Reading HLA matrices and demultiplex calls...")
-hla_mats <- lapply(seq_along(batch_names), function(i) read_hla_matrix(batch_names[i], i))
-common_hla <- Reduce(intersect, lapply(hla_mats, colnames))
-hla_all <- do.call(rbind, lapply(hla_mats, function(x) x[, common_hla, drop = FALSE]))
-demux_all <- bind_rows(lapply(seq_along(batch_names), function(i) read_demux(batch_names[i], i)))
-
-# Read the saved object or source table used by this analysis.
-sample_info <- read.csv(file.path(data_dir, "SampleInfo.csv"), stringsAsFactors = FALSE, check.names = FALSE) %>%
-  transmute(HLA_Splitter = as.character(.data[["Patient ID"]]), Group = as.character(Group))
-
-plot_cells <- demux_all %>%
-  filter(!is.na(HLA_Splitter), !HLA_Splitter %in% c("Undefined", "Doublets", "Undefiend")) %>%
-  inner_join(sample_info, by = "HLA_Splitter") %>%
-  filter(Group %in% group_levels)
-
-common_cells <- intersect(plot_cells$Cell.barcode, rownames(hla_all))
-plot_cells <- plot_cells %>% filter(Cell.barcode %in% common_cells)
-hla_use <- hla_all[plot_cells$Cell.barcode, , drop = FALSE]
-rownames(plot_cells) <- plot_cells$Cell.barcode
-plot_cells <- plot_cells[rownames(hla_use), , drop = FALSE]
-
-message(sprintf("Matched %d demultiplexed cells for plotting.", nrow(plot_cells)))
-if (nrow(plot_cells) < 10) {
-  stop("Too few matched cells for t-SNE.")
-}
-
-lib_size <- rowSums(hla_use)
-keep_cells <- lib_size > 0
-hla_use <- hla_use[keep_cells, , drop = FALSE]
-plot_cells <- plot_cells[keep_cells, , drop = FALSE]
-
-hla_norm <- sweep(hla_use, 1, rowSums(hla_use), "/") * 100
-hla_norm <- log1p(hla_norm)
-hla_norm[is.na(hla_norm)] <- 0
-for (j in seq_len(ncol(hla_norm))) {
-  pos <- hla_norm[, j] > 0
-  if (sum(pos) > 1) {
-    hla_norm[pos, j] <- as.numeric(scale(hla_norm[pos, j], center = FALSE, scale = TRUE))
-  }
-}
-
-tsne_cache <- file.path(demux_dir, "HLA_TSNE_Adjusted_Prediction_revision_source.csv")
+tsne_cache <- file.path(getOption("hla.data_root"), "balf", "HLA_TSNE_Adjusted_Prediction_revision_source.csv")
 force_tsne <- tolower(Sys.getenv("FORCE_HLA_TSNE", unset = "false")) %in% c("true", "1", "yes")
 if (file.exists(tsne_cache) && !force_tsne) {
+  # Cached coordinates include assignments and group metadata for both panels.
   message("Using cached HLA t-SNE coordinates: ", tsne_cache)
   tsne_df <- read.csv(tsne_cache, stringsAsFactors = FALSE, check.names = FALSE) %>%
     as_tibble()
 } else {
-  message("Running HLA t-SNE...")
-  set.seed(321)
-  perplexity_val <- min(max(20, floor((nrow(hla_norm) - 1) / 3)), 50)
-  tsne_out <- Rtsne(
-    as.matrix(hla_norm),
-    dims = 2,
-    pca = TRUE,
-    max_iter = 1000,
-    theta = 0.4,
-    perplexity = perplexity_val,
-    verbose = FALSE,
-    check_duplicates = FALSE
-  )
-
-  tsne_df <- as_tibble(tsne_out$Y, .name_repair = "minimal") %>%
-    setNames(c("tSNE1", "tSNE2")) %>%
-    bind_cols(plot_cells %>% rownames_to_column("Cell")) %>%
-    mutate(HLA_count = log10(rowSums(hla_use) + 1))
-# Export the analysis source data for figure reproduction.
-  write.csv(tsne_df, tsne_cache, row.names = FALSE)
+  message("Reading HLA matrices and demultiplex calls...")
+  hla_mats <- lapply(seq_along(batch_names), function(i) read_hla_matrix(batch_names[i], i))
+  common_hla <- Reduce(intersect, lapply(hla_mats, colnames))
+  hla_all <- do.call(rbind, lapply(hla_mats, function(x) x[, common_hla, drop = FALSE]))
+  demux_all <- bind_rows(lapply(seq_along(batch_names), function(i) read_demux(batch_names[i], i)))
+  
+  # Read the saved object or source table used by this analysis.
+  sample_info <- read.csv(file.path(getOption("hla.data_root"), "balf", "SampleInfo.csv"), stringsAsFactors = FALSE, check.names = FALSE) %>%
+    transmute(HLA_Splitter = as.character(.data[["Patient ID"]]), Group = as.character(Group))
+  
+  plot_cells <- demux_all %>%
+    filter(!is.na(HLA_Splitter), !HLA_Splitter %in% c("Undefined", "Doublets", "Undefiend")) %>%
+    inner_join(sample_info, by = "HLA_Splitter") %>%
+    filter(Group %in% group_levels)
+  
+  common_cells <- intersect(plot_cells$Cell.barcode, rownames(hla_all))
+  plot_cells <- plot_cells %>% filter(Cell.barcode %in% common_cells)
+  hla_use <- hla_all[plot_cells$Cell.barcode, , drop = FALSE]
+  rownames(plot_cells) <- plot_cells$Cell.barcode
+  plot_cells <- plot_cells[rownames(hla_use), , drop = FALSE]
+  
+  message(sprintf("Matched %d demultiplexed cells for plotting.", nrow(plot_cells)))
+  if (nrow(plot_cells) < 10) {
+    stop("Too few matched cells for t-SNE.")
+  }
+  
+  lib_size <- rowSums(hla_use)
+  keep_cells <- lib_size > 0
+  hla_use <- hla_use[keep_cells, , drop = FALSE]
+  plot_cells <- plot_cells[keep_cells, , drop = FALSE]
+  
+  hla_norm <- sweep(hla_use, 1, rowSums(hla_use), "/") * 100
+  hla_norm <- log1p(hla_norm)
+  hla_norm[is.na(hla_norm)] <- 0
+  for (j in seq_len(ncol(hla_norm))) {
+    pos <- hla_norm[, j] > 0
+    if (sum(pos) > 1) {
+      hla_norm[pos, j] <- as.numeric(scale(hla_norm[pos, j], center = FALSE, scale = TRUE))
+    }
+  }
+  
+  tsne_cache <- file.path(getOption("hla.data_root"), "balf", "HLA_TSNE_Adjusted_Prediction_revision_source.csv")
+  force_tsne <- tolower(Sys.getenv("FORCE_HLA_TSNE", unset = "false")) %in% c("true", "1", "yes")
+  if (file.exists(tsne_cache) && !force_tsne) {
+    message("Using cached HLA t-SNE coordinates: ", tsne_cache)
+    tsne_df <- read.csv(tsne_cache, stringsAsFactors = FALSE, check.names = FALSE) %>%
+      as_tibble()
+  } else {
+    message("Running HLA t-SNE...")
+    set.seed(321)
+    perplexity_val <- min(max(20, floor((nrow(hla_norm) - 1) / 3)), 50)
+    tsne_out <- Rtsne(
+      as.matrix(hla_norm),
+      dims = 2,
+      pca = TRUE,
+      max_iter = 1000,
+      theta = 0.4,
+      perplexity = perplexity_val,
+      verbose = FALSE,
+      check_duplicates = FALSE
+    )
+  
+    tsne_df <- as_tibble(tsne_out$Y, .name_repair = "minimal") %>%
+      setNames(c("tSNE1", "tSNE2")) %>%
+      bind_cols(plot_cells %>% rownames_to_column("Cell")) %>%
+      mutate(HLA_count = log10(rowSums(hla_use) + 1))
+  # Export the analysis source data for figure reproduction.
+    write.csv(tsne_df, tsne_cache, row.names = FALSE)
+  }
 }
 
 sample_levels <- natural_sample_sort(tsne_df$HLA_Splitter)

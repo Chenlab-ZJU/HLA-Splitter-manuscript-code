@@ -3,7 +3,7 @@
 # Purpose: Upstream T-cell annotation, repertoire, differential-expression and balanced ligand-receptor analysis.
 # Original source: 13_revision_ABMR_vs_TCMR_Tcell_DE_function.R
 # Figure/table scope: Fig5; FigS9; Supplementary Table 18; Methods CXCR3-axis analysis
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -33,14 +33,14 @@ get_script_dir <- function() {
 }
 
 script_dir <- get_script_dir()
-urine_dir <- normalizePath(file.path(script_dir, ".."), winslash = "/", mustWork = TRUE)
-project_dir <- normalizePath(file.path(urine_dir, "..", ".."), winslash = "/", mustWork = TRUE)
-revision_dir <- file.path(project_dir, "Revision")
+urine_dir <- getOption("hla.cohort_dir")
+project_dir <- getOption("hla.project_root")
+revision_dir <- getOption("hla.revision_root")
 out_dir <- file.path(revision_dir, "revised figure")
 table_dir <- file.path(out_dir, "tables")
 panel_dir <- file.path(out_dir, "panels", "ABMR_TCMR_Tcell_function")
 result_dir <- file.path(urine_dir, "Result", "Reviewer_Tcell_ABMR_TCMR")
-msigdb_dir <- file.path(project_dir, "Data", "MSigDB")
+msigdb_dir <- file.path(getOption("hla.data_root"), "references")
 
 dir.create(table_dir, recursive = TRUE, showWarnings = FALSE)
 dir.create(panel_dir, recursive = TRUE, showWarnings = FALSE)
@@ -146,7 +146,7 @@ safe_wilcox_p <- function(values, groups, min_groups = 2) {
 }
 
 read_go_gmt <- function(msigdb_dir) {
-  gmt_file <- file.path(msigdb_dir, "c5.go.bp.v2023.2.Hs.symbols.gmt")
+  gmt_file <- file.path(getOption("hla.data_root"), "references", "c5.go.bp.v2023.2.Hs.symbols.gmt")
   if (!file.exists(gmt_file)) return(NULL)
   gmt <- clusterProfiler::read.gmt(gmt_file)
   colnames(gmt) <- c("term", "gene")
@@ -177,7 +177,7 @@ run_enrichment <- function(genes, universe, term2gene) {
 }
 
 message("Loading T cell Seurat object...")
-tcell_rds <- file.path(result_dir, "Tcell_only_ABMR_TCMR_reclustered.rds")
+tcell_rds <- file.path(getOption("hla.data_root"), "urine", "Tcell_only_ABMR_TCMR_reclustered.rds")
 # Read the saved object or source table used by this analysis.
 tcell <- readRDS(tcell_rds)
 DefaultAssay(tcell) <- "RNA"

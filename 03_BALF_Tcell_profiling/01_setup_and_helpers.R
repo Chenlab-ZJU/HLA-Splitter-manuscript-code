@@ -2,7 +2,7 @@
 # Purpose: Upstream BALF processing, repertoire and disease-signature computation.
 # Original source: 00_setup_and_helpers.R
 # Figure/table scope: Fig3; FigS6; Supplementary Table 13
-# Data cohort: 肺泡灌洗液. Inputs retain the original Data/Result hierarchy.
+# Data cohort: balf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -14,7 +14,7 @@
 # Description: 全局依赖加载、颜色配置、自定义辅助函数
 # ==============================================================================
 
-WORK_DIR <- file.path(getOption("hla.data_root"), "\u80ba\u6ce1\u704c\u6d17\u6db2")
+WORK_DIR <- file.path(getOption("hla.data_root"), "balf")
 setwd(WORK_DIR)
 set.seed(2026)
 

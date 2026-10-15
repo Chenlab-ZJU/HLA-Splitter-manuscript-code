@@ -2,7 +2,7 @@
 # Purpose: Final robust signature construction, scoring and cross-cohort evaluation.
 # Original source: 31_revision_signature_score_advanced_optimization_GSE189536_validation.R
 # Figure/table scope: Fig4i; Fig4j; FigS8a; FigS8b; FigS8c; FigS8d; FigS8e
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -22,12 +22,12 @@ suppressPackageStartupMessages({
 })
 
 urine_dir <- Sys.getenv("URINE_PROJECT_DIR", unset = "")
-if (!nzchar(urine_dir)) urine_dir <- file.path(getOption("hla.data_root"), "\u5c3f\u6db2\u6837\u672c")
+if (!nzchar(urine_dir)) urine_dir <- file.path(getOption("hla.data_root"), "urine")
 urine_dir <- gsub("\\\\", "/", urine_dir)
 if (!dir.exists(urine_dir)) stop("Cannot find URINE_PROJECT_DIR: ", urine_dir)
 
 gse_dir <- Sys.getenv("GSE189536_PROJECT_DIR", unset = "")
-if (!nzchar(gse_dir)) gse_dir <- file.path(getOption("hla.data_root"), "GSE189536")
+if (!nzchar(gse_dir)) gse_dir <- file.path(getOption("hla.data_root"), "gse189536")
 gse_dir <- gsub("\\\\", "/", gse_dir)
 if (!dir.exists(gse_dir)) stop("Cannot find GSE189536_PROJECT_DIR: ", gse_dir)
 
@@ -231,7 +231,7 @@ plot_roc <- function(roc_df, roc_summary, color_values, color_col, filename, wid
 message("Reading urine object.")
 urine_object <- c(
   file.path(urine_dir, "Result", "Objects", "Urine_scRNA.rds"),
-  file.path(urine_dir, "Result", "Objects", "Urine_ALL.rds")
+  file.path(getOption("hla.data_root"), "urine", "Urine_ALL.rds")
 )
 urine_object <- urine_object[file.exists(urine_object)][1]
 # Read the saved object or source table used by this analysis.
@@ -246,9 +246,9 @@ urine_meta <- urine@meta.data %>%
   filter(!is.na(Sample), Sample != "", !is.na(Group), Group %in% group_levels)
 
 deg_all <- bind_rows(
-  read_deg(file.path(deg_dir, "scRNA_TCMR_DEG.csv"), "TCMR", "TCMR"),
-  read_deg(file.path(deg_dir, "scRNA_ABMR_DEG.csv"), "ABMR", "ABMR"),
-  read_deg(file.path(deg_dir, "scRNA_BK_DEG.csv"), "BK", "BK")
+  read_deg(file.path(getOption("hla.data_root"), "urine", "scRNA_TCMR_DEG.csv"), "TCMR", "TCMR"),
+  read_deg(file.path(getOption("hla.data_root"), "urine", "scRNA_ABMR_DEG.csv"), "ABMR", "ABMR"),
+  read_deg(file.path(getOption("hla.data_root"), "urine", "scRNA_BK_DEG.csv"), "BK", "BK")
 ) %>%
   filter(gene %in% rownames(urine_expr), is.na(p_val_adj) | p_val_adj < 0.05, avg_log2FC >= 0.5) %>%
   group_by(signature, gene) %>%
@@ -356,7 +356,7 @@ p_urine_box <- ggplot(urine_score, aes(Group, mean_score, fill = Group, colour =
 save_plot_safe(p_urine_box, "Advanced_signature_sample_scores_urine_boxplot", 7.6, 3.2)
 
 message("Reading GSE189536 biopsy immune object.")
-gse_object <- file.path(gse_dir, "Harmony_immune_cells_manual_annotation_results", "GSE189536_manual_annotation_immune_filtered_seurat.rds")
+gse_object <- file.path(getOption("hla.data_root"), "gse189536", "Immune_filtered.rds")
 gse <- readRDS(gse_object)
 DefaultAssay(gse) <- "RNA"
 gse_expr <- GetAssayData(gse, assay = "RNA", layer = "data")

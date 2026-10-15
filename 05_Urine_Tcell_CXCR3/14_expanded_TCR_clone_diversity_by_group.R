@@ -3,7 +3,7 @@
 # Purpose: Final urine T-cell, CXCR3 and expanded-clone figures.
 # Original source: 36_revision_expanded_TCR_clone_diversity_by_group.R
 # Figure/table scope: Fig5a; Fig5b; Fig5c; Fig5d; Fig5e; Fig5f; Fig5g; Fig5h; Fig5i; FigS9a; FigS9b; FigS9c; FigS9d; FigS9e; FigS9f; FigS9g
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -36,7 +36,7 @@ if (nzchar(project_dir_env)) {
 project_dir <- getOption("hla.cohort_dir")
 }
 
-object_path <- file.path(project_dir, "Result", "Objects", "Urine_Tcell.rds")
+object_path <- file.path(getOption("hla.data_root"), "urine", "Urine_Tcell.rds")
 figure_dir <- file.path(project_dir, "Figures", "TCR", "Revision_TCR_clone_diversity")
 result_dir <- file.path(project_dir, "Result", "TCR", "Revision_TCR_clone_diversity")
 dir.create(figure_dir, recursive = TRUE, showWarnings = FALSE)

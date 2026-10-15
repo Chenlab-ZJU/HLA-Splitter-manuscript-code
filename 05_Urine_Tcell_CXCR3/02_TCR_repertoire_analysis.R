@@ -2,7 +2,7 @@
 # Purpose: Upstream T-cell annotation, repertoire, differential-expression and balanced ligand-receptor analysis.
 # Original source: 06_TCR_repertoire_analysis.R
 # Figure/table scope: Fig5; FigS9; Supplementary Table 18; Methods CXCR3-axis analysis
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -26,7 +26,7 @@ dir.create("./Result", showWarnings = FALSE, recursive = TRUE)
 dir.create("./Figures", showWarnings = FALSE, recursive = TRUE)
 
 # Read the saved object or source table used by this analysis.
-Tcell <- readRDS("./Result/Objects/Urine_Tcell.rds")
+Tcell <- readRDS(file.path(getOption("hla.data_root"), "urine", "Urine_Tcell.rds"))
 Sample_Info <- read.csv(data_path("metadata", "Sample_Info.csv"), stringsAsFactors = FALSE)
 
 # 1. 整合TCR到Seurat中 ---------------------------------------------------------
@@ -172,7 +172,7 @@ ggsave(fig_file("TCR/Clonality_Expansion", 2, "Clone_Size_by_Celltype_and_Group"
 Tcell$clone_ratio <- ifelse(Tcell$clone_ratio > 1, Tcell$clone_ratio, 0)
 p_dot <- plot_dotplot(Tcell, features = "clone_ratio", group_by = "Group", cluster_by = "Celltype")
 ggsave(fig_file("TCR/Clonality_Expansion", 3, "Clone_Ratio_Dotplot_Celltype_Group"), plot = p_dot, height = 3, width = 6)
-saveRDS(Tcell, "./Result/Objects/Urine_Tcell.rds")
+saveRDS(Tcell, file.path(getOption("hla.data_root"), "urine", "Urine_Tcell.rds"))
 
 # 4. 高扩增克隆 Heatmap --------------------------------------------------------
 all_clones <- Tcell@meta.data[Tcell$clonalFrequency > 0, , drop = FALSE] %>%

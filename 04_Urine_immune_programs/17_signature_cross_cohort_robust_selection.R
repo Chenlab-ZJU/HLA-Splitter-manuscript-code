@@ -2,7 +2,7 @@
 # Purpose: Final robust signature construction, scoring and cross-cohort evaluation.
 # Original source: 32_revision_signature_cross_cohort_robust_selection.R
 # Figure/table scope: Fig4i; Fig4j; FigS8a; FigS8b; FigS8c; FigS8d; FigS8e
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -22,10 +22,10 @@ suppressPackageStartupMessages({
 })
 
 urine_dir <- Sys.getenv("URINE_PROJECT_DIR", unset = "")
-if (!nzchar(urine_dir)) urine_dir <- file.path(getOption("hla.data_root"), "\u5c3f\u6db2\u6837\u672c")
+if (!nzchar(urine_dir)) urine_dir <- file.path(getOption("hla.data_root"), "urine")
 urine_dir <- gsub("\\\\", "/", urine_dir)
 gse_dir <- Sys.getenv("GSE189536_PROJECT_DIR", unset = "")
-if (!nzchar(gse_dir)) gse_dir <- file.path(getOption("hla.data_root"), "GSE189536")
+if (!nzchar(gse_dir)) gse_dir <- file.path(getOption("hla.data_root"), "gse189536")
 gse_dir <- gsub("\\\\", "/", gse_dir)
 
 out_dir <- file.path(urine_dir, "Result", "Signature_score_analysis", "Cross_cohort_robust_selection")
@@ -140,9 +140,9 @@ build_candidate_sets <- function(deg_table, sample_gene_auc) {
 
 message("Reconstructing candidate gene sets.")
 deg_all <- bind_rows(
-  read_deg(file.path(deg_dir, "scRNA_TCMR_DEG.csv"), "TCMR", "TCMR"),
-  read_deg(file.path(deg_dir, "scRNA_ABMR_DEG.csv"), "ABMR", "ABMR"),
-  read_deg(file.path(deg_dir, "scRNA_BK_DEG.csv"), "BK", "BK")
+  read_deg(file.path(getOption("hla.data_root"), "urine", "scRNA_TCMR_DEG.csv"), "TCMR", "TCMR"),
+  read_deg(file.path(getOption("hla.data_root"), "urine", "scRNA_ABMR_DEG.csv"), "ABMR", "ABMR"),
+  read_deg(file.path(getOption("hla.data_root"), "urine", "scRNA_BK_DEG.csv"), "BK", "BK")
 ) %>%
   filter(is.na(p_val_adj) | p_val_adj < 0.05, avg_log2FC >= 0.5) %>%
   group_by(signature, gene) %>%
@@ -156,7 +156,7 @@ candidate_pack <- build_candidate_sets(deg_all, sample_gene_auc)
 urine_perf <- read.csv(file.path(advanced_dir, "Advanced_signature_gene_set_candidates_urine_AUC.csv"), stringsAsFactors = FALSE)
 
 message("Scoring candidate gene sets in GSE189536.")
-gse_object <- file.path(gse_dir, "Harmony_immune_cells_manual_annotation_results", "GSE189536_manual_annotation_immune_filtered_seurat.rds")
+gse_object <- file.path(getOption("hla.data_root"), "gse189536", "Immune_filtered.rds")
 gse <- readRDS(gse_object)
 DefaultAssay(gse) <- "RNA"
 gse_expr <- GetAssayData(gse, assay = "RNA", layer = "data")
@@ -239,7 +239,7 @@ selected_gene_table <- bind_rows(lapply(seq_len(nrow(robust_selected)), function
 })) %>%
   mutate(signature = factor(signature, levels = signature_levels)) %>%
   arrange(signature, gene_rank)
-write_csv_safe(selected_gene_table, file.path(out_dir, "Cross_cohort_robust_selected_genes.csv"))
+write_csv_safe(selected_gene_table, file.path(getOption("hla.data_root"), "urine", "Cross_cohort_robust_selected_genes.csv"))
 
 selected_sets <- split(selected_gene_table$gene, as.character(selected_gene_table$signature))
 selected_sets <- selected_sets[signature_levels]
@@ -260,7 +260,7 @@ score_selected <- function(expr, meta, rankings, dataset_label) {
 }
 
 message("Scoring robust selected sets in urine and GSE189536.")
-urine_object <- c(file.path(urine_dir, "Result", "Objects", "Urine_scRNA.rds"), file.path(urine_dir, "Result", "Objects", "Urine_ALL.rds"))
+urine_object <- c(file.path(urine_dir, "Result", "Objects", "Urine_scRNA.rds"), file.path(getOption("hla.data_root"), "urine", "Urine_ALL.rds"))
 urine_object <- urine_object[file.exists(urine_object)][1]
 urine <- readRDS(urine_object)
 DefaultAssay(urine) <- "RNA"
@@ -275,7 +275,7 @@ urine_score <- score_selected(urine_expr, urine_meta, urine_rankings, "Urine")
 gse_score <- score_selected(gse_expr, gse_meta, gse_rankings, "GSE189536")
 all_scores <- bind_rows(urine_score, gse_score) %>%
   mutate(signature = factor(signature, levels = signature_levels), Group = factor(Group, levels = group_levels))
-write_csv_safe(all_scores, file.path(out_dir, "Cross_cohort_robust_sample_scores.csv"))
+write_csv_safe(all_scores, file.path(getOption("hla.data_root"), "urine", "Cross_cohort_robust_sample_scores.csv"))
 
 roc_from_scores <- function(df, dataset_label, signatures) {
   bind_rows(lapply(signatures, function(sig) {

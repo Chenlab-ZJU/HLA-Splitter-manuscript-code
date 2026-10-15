@@ -2,7 +2,7 @@
 # Purpose: Upstream BALF processing, repertoire and disease-signature computation.
 # Original source: 02_demultiplexing_and_doublets.R
 # Figure/table scope: Fig3; FigS6; Supplementary Table 13
-# Data cohort: 肺泡灌洗液. Inputs retain the original Data/Result hierarchy.
+# Data cohort: balf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -22,7 +22,7 @@ filenames <- c("Batch1","Batch2","Batch3","Batch4")
 
 # 2. 整合 HLA-Splitter 信息并绘制 tSNE -----------------------------------------
 source(file.path(getOption("hla.code_root"), "01_HLA_Splitter_benchmarks/01_HLA_demultiplex_v2.R"))
-sampleInfo <- read.csv("./Data/HLA_list/HLA-genotypes.csv", header = TRUE, row.names = 1)
+sampleInfo <- read.csv(file.path(getOption("hla.data_root"), "balf", "HLA-genotypes.csv"), header = TRUE, row.names = 1)
 HLA_list <- lapply(sampleInfo, unique)
 
 for (i in seq_along(filenames)) {
@@ -65,7 +65,7 @@ scRNA_Intergrate <- scrublet(scRNA_Intergrate)
 scRNA_Intergrate <- subset(scRNA_Intergrate, subset = doublet_scores < 0.2)
 
 # 3. 添加分组信息与保存 --------------------------------------------------------
-SampleInfo <- read.csv("./Data/SampleInfo.csv")
+SampleInfo <- read.csv(file.path(getOption("hla.data_root"), "balf", "SampleInfo.csv"))
 scRNA_Intergrate$Group <- SampleInfo$Group[match(scRNA_Intergrate$HLA_Splitter, SampleInfo$Patient.ID)]
 scRNA_Intergrate$Group[is.na(scRNA_Intergrate$Group)] <- 'Undefined'
 Group_levels <- c("CAP", "LC", "ILD", "Others", "Undefiend")
@@ -138,7 +138,7 @@ scRNA_Cleaned <- NormalizeData(scRNA_Cleaned) %>% FindVariableFeatures(nfeatures
 gene_matrix <- AverageExpression(scRNA_Cleaned, group.by = c("HLA_Splitter"), assays = "RNA", return.seurat = TRUE)
 gene_matrix <- gene_matrix@assays$RNA$scale.data %>% as.matrix()
 
-Sample_Info = read.csv("./Data/SampleInfo.csv")
+Sample_Info = read.csv(file.path(getOption("hla.data_root"), "balf", "SampleInfo.csv"))
 annotation_col = data.frame(Gender = Sample_Info$Gender[match(colnames(gene_matrix), Sample_Info$Patient.ID)])
 
 cell_counts <- table(scRNA_Cleaned$HLA_Splitter)

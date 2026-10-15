@@ -2,7 +2,7 @@
 # Purpose: Final urine immune-cell composition, module and demultiplexing figures.
 # Original source: 30_revision_demultiplex_HLA_tsne_predict_sample_number.R
 # Figure/table scope: Fig4b; Fig4c; Fig4d; Fig4e; Fig4f; Fig4g; Fig4h; FigS7a; FigS7b; FigS7c; FigS7d; FigS7e
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -114,7 +114,7 @@ sample_sort_key <- function(x) {
 }
 
 read_predict_number <- function() {
-  predict_file <- file.path(result_dir, "Predict_sample_number.csv")
+  predict_file <- file.path(getOption("hla.data_root"), "urine", "Predict_sample_number.csv")
   if (!file.exists(predict_file)) return(NULL)
   raw <- read.csv(predict_file, stringsAsFactors = FALSE, check.names = FALSE)
   raw <- raw[, nzchar(names(raw)), drop = FALSE]
@@ -197,7 +197,7 @@ combine_hla_matrices <- function(mats) {
 }
 
 build_hla_tsne <- function() {
-  object_path <- file.path(project_dir, "Result", "Objects", "Urine_ALL.rds")
+  object_path <- file.path(getOption("hla.data_root"), "urine", "Urine_ALL.rds")
   if (!file.exists(object_path)) object_path <- file.path(project_dir, "Result", "Objects", "Urine_Allcells.rds")
   if (!file.exists(object_path)) stop("Cannot find Urine_ALL.rds or Urine_Allcells.rds.")
 
@@ -582,7 +582,7 @@ if (!is.null(predict_df)) {
   plot_predict_sample_number(predict_df)
 }
 
-tsne_source_file <- file.path(result_dir, "HLA_TSNE_Adjusted_Prediction_source.csv")
+tsne_source_file <- file.path(getOption("hla.data_root"), "urine", "HLA_TSNE_Adjusted_Prediction_source.csv")
 if (file.exists(tsne_source_file)) {
   tsne_df <- read.csv(tsne_source_file, stringsAsFactors = FALSE, check.names = FALSE) %>%
     mutate(

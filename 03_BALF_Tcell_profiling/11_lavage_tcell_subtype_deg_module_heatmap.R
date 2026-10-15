@@ -2,7 +2,7 @@
 # Purpose: Final BALF figures from saved objects and signatures.
 # Original source: 19_revision_lavage_tcell_subtype_deg_module_heatmap.R
 # Figure/table scope: Fig3b; Fig3c; Fig3d; Fig3e; Fig3f; Fig3g; Fig3h; Fig3i; FigS6a; FigS6b; FigS6c; FigS6d; FigS6e; FigS6f; FigS6g; FigS6h
-# Data cohort: 肺泡灌洗液. Inputs retain the original Data/Result hierarchy.
+# Data cohort: balf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -21,7 +21,7 @@ suppressPackageStartupMessages({
 
 project_dir <- Sys.getenv("LAVAGE_PROJECT_DIR", unset = NA_character_)
 if (is.na(project_dir) || !nzchar(project_dir)) {
-  project_dir <- file.path(getOption("hla.data_root"), "\u80ba\u6ce1\u704c\u6d17\u6db2")
+  project_dir <- file.path(getOption("hla.data_root"), "balf")
 }
 project_dir <- gsub("\\\\", "/", project_dir)
 result_dir <- file.path(project_dir, "Result")
@@ -119,7 +119,7 @@ theme_heatmap <- function(base_size = 9.2) {
 
 message("Loading lavage_Tcell.rds...")
 # Read the saved object or source table used by this analysis.
-tcell <- readRDS(file.path(result_dir, "lavage_Tcell.rds"))
+tcell <- readRDS(file.path(getOption("hla.data_root"), "balf", "lavage_Tcell.rds"))
 DefaultAssay(tcell) <- if ("RNA" %in% Assays(tcell)) "RNA" else DefaultAssay(tcell)
 if (!"revised_celltype" %in% colnames(tcell@meta.data)) {
   stop("lavage_Tcell.rds does not contain revised_celltype.")
@@ -130,7 +130,7 @@ tcell <- subset(tcell, subset = !is.na(T_celltype))
 present_types <- levels(droplevels(tcell$T_celltype))
 Idents(tcell) <- "T_celltype"
 
-deg_path <- file.path(result_dir, "lavage_Tcell_subtype_DEG_wilcox_revision.csv")
+deg_path <- file.path(getOption("hla.data_root"), "balf", "lavage_Tcell_subtype_DEG_wilcox_revision.csv")
 if (file.exists(deg_path)) {
   message("Reusing existing T-cell subtype DEG table...")
   deg_all <- read.csv(deg_path, stringsAsFactors = FALSE, check.names = FALSE) %>%

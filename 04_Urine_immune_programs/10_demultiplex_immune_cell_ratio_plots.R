@@ -2,7 +2,7 @@
 # Purpose: Final urine immune-cell composition, module and demultiplexing figures.
 # Original source: 27_revision_demultiplex_immune_cell_ratio_plots.R
 # Figure/table scope: Fig4b; Fig4c; Fig4d; Fig4e; Fig4f; Fig4g; Fig4h; FigS7a; FigS7b; FigS7c; FigS7d; FigS7e
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -83,7 +83,7 @@ save_plot <- function(plot, filename, width, height) {
   invisible(c(pdf = pdf_path, png = png_path))
 }
 
-input_file <- file.path(result_dir, "Comparision_immune_cell_ratio.csv")
+input_file <- file.path(getOption("hla.data_root"), "urine", "Comparision_immune_cell_ratio.csv")
 if (!file.exists(input_file)) {
   stop("Missing input table: ", input_file)
 }

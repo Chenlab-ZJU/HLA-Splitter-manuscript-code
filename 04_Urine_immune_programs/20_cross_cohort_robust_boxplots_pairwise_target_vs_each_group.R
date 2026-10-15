@@ -2,7 +2,7 @@
 # Purpose: Final robust signature construction, scoring and cross-cohort evaluation.
 # Original source: 37_quick_redraw_cross_cohort_robust_boxplots_pairwise_target_vs_each_group.R
 # Figure/table scope: Fig4i; Fig4j; FigS8a; FigS8b; FigS8c; FigS8d; FigS8e
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -15,7 +15,7 @@ suppressPackageStartupMessages({
 })
 
 env_project_dir <- Sys.getenv("URINE_PROJECT_DIR", unset = "")
-project_dir <- if (nzchar(env_project_dir)) gsub("\\\\", "/", env_project_dir) else file.path(getOption("hla.data_root"), "\u5c3f\u6db2\u6837\u672c")
+project_dir <- if (nzchar(env_project_dir)) gsub("\\\\", "/", env_project_dir) else file.path(getOption("hla.data_root"), "urine")
 
 figure_dir <- file.path(project_dir, "Figures", "Signature_score_analysis", "Cross_cohort_robust_selection")
 figure_dir_root <- file.path(project_dir, "Figures", "Signature_score_analysis")
@@ -162,7 +162,7 @@ plot_pairwise_boxplot <- function(df, signatures, groups, filename, width, heigh
   invisible(p)
 }
 
-score_file <- file.path(result_dir, "Cross_cohort_robust_sample_scores.csv")
+score_file <- file.path(getOption("hla.data_root"), "urine", "Cross_cohort_robust_sample_scores.csv")
 if (!file.exists(score_file)) stop("Missing sample score table: ", score_file)
 
 # Read the saved object or source table used by this analysis.

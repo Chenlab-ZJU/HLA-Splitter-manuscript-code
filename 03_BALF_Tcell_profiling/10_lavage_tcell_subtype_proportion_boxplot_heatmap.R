@@ -2,7 +2,7 @@
 # Purpose: Final BALF figures from saved objects and signatures.
 # Original source: 18_revision_lavage_tcell_subtype_proportion_boxplot_heatmap.R
 # Figure/table scope: Fig3b; Fig3c; Fig3d; Fig3e; Fig3f; Fig3g; Fig3h; Fig3i; FigS6a; FigS6b; FigS6c; FigS6d; FigS6e; FigS6f; FigS6g; FigS6h
-# Data cohort: 肺泡灌洗液. Inputs retain the original Data/Result hierarchy.
+# Data cohort: balf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -20,7 +20,7 @@ suppressPackageStartupMessages({
 
 project_dir <- Sys.getenv("LAVAGE_PROJECT_DIR", unset = NA_character_)
 if (is.na(project_dir) || !nzchar(project_dir)) {
-  project_dir <- file.path(getOption("hla.data_root"), "\u80ba\u6ce1\u704c\u6d17\u6db2")
+  project_dir <- file.path(getOption("hla.data_root"), "balf")
 }
 project_dir <- gsub("\\\\", "/", project_dir)
 result_dir <- file.path(project_dir, "Result")
@@ -39,7 +39,7 @@ fallback_colors <- c(
   "#731A73", "#FFCB5B", "#E89B1E", "#0076B9", "#3D505A", "#0098B2"
 )
 tcell_type_colors <- setNames(fallback_colors[seq_along(tcell_type_levels)], tcell_type_levels)
-color_map_path <- file.path(result_dir, "lavage_Tcell_UMAP_Cluster_Group_color_map.csv")
+color_map_path <- file.path(getOption("hla.data_root"), "balf", "lavage_Tcell_UMAP_Cluster_Group_color_map.csv")
 if (file.exists(color_map_path)) {
   color_map <- read.csv(color_map_path, stringsAsFactors = FALSE, check.names = FALSE)
   color_map <- color_map[color_map$category == "T_celltype", , drop = FALSE]
@@ -110,7 +110,7 @@ theme_heatmap <- function(base_size = 9.2) {
 
 message("Loading lavage_Tcell.rds and calculating sample-level T-cell subtype proportions...")
 # Read the saved object or source table used by this analysis.
-tcell <- readRDS(file.path(result_dir, "lavage_Tcell.rds"))
+tcell <- readRDS(file.path(getOption("hla.data_root"), "balf", "lavage_Tcell.rds"))
 required_cols <- c("HLA_Splitter", "Group", "revised_celltype")
 missing_cols <- setdiff(required_cols, colnames(tcell@meta.data))
 if (length(missing_cols) > 0) {

@@ -3,7 +3,7 @@
 # Purpose: Final urine immune-cell composition, module and demultiplexing figures.
 # Original source: 40_revision_all_cells_rejection_module_heatmap_score.R
 # Figure/table scope: Fig4b; Fig4c; Fig4d; Fig4e; Fig4f; Fig4g; Fig4h; FigS7a; FigS7b; FigS7c; FigS7d; FigS7e
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -37,7 +37,7 @@ if (nzchar(env_project_dir)) {
 project_dir <- getOption("hla.cohort_dir")
 }
 
-object_file <- file.path(project_dir, "Result", "Objects", "Urine_ALL.rds")
+object_file <- file.path(getOption("hla.data_root"), "urine", "Urine_ALL.rds")
 figure_dir <- file.path(project_dir, "Figures", "scRNA", "Group_DEG_Function")
 result_dir <- file.path(project_dir, "Result", "scRNA", "Group_DEG_Function")
 dir.create(figure_dir, recursive = TRUE, showWarnings = FALSE)
@@ -172,9 +172,9 @@ read_group_deg <- function(project_dir) {
   deg_dir <- file.path(project_dir, "Result", "Signature_score_analysis", "Differential_Expression")
   files <- c(
     "NR" = file.path(deg_dir, "scRNA_NR_DEG.csv"),
-    "TCMR" = file.path(deg_dir, "scRNA_TCMR_DEG.csv"),
-    "ABMR" = file.path(deg_dir, "scRNA_ABMR_DEG.csv"),
-    "BK" = file.path(deg_dir, "scRNA_BK_DEG.csv")
+    "TCMR" = file.path(getOption("hla.data_root"), "urine", "scRNA_TCMR_DEG.csv"),
+    "ABMR" = file.path(getOption("hla.data_root"), "urine", "scRNA_ABMR_DEG.csv"),
+    "BK" = file.path(getOption("hla.data_root"), "urine", "scRNA_BK_DEG.csv")
   )
   bind_rows(lapply(names(files), function(grp) {
     if (!file.exists(files[[grp]])) return(tibble())

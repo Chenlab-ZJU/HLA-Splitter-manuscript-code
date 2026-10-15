@@ -3,7 +3,7 @@
 # Purpose: External Harmony annotation and final CXCR3/module validation.
 # Original source: plot_GSE189536_urine_style_Tcell_CXCR3_marker_dotplot.R
 # Figure/table scope: FigS10a; FigS10b; FigS10c; FigS10d; FigS10e; FigS10f
-# Data cohort: GSE189536. Inputs retain the original Data/Result hierarchy.
+# Data cohort: gse189536. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -30,13 +30,13 @@ env_data_dir <- Sys.getenv("GSE189536_DATA_DIR", unset = "")
 if (nzchar(env_data_dir)) {
   data_dir <- sub("/$", "", gsub("\\\\", "/", env_data_dir))
 } else {
-  data_dir <- file.path(getOption("hla.data_root"), "GSE189536")
+  data_dir <- file.path(getOption("hla.data_root"), "gse189536")
 }
 
 annotation_dir <- file.path(data_dir, "Harmony_immune_cells_manual_annotation_results", "Urine_style_annotation")
 input_rds <- file.path(data_dir, "Revision_rejection_axis_validation", "Objects", "final_objects", "GSE189536_Tcell_PCA_no_batch_res0.65_reclustered.rds")
-fallback_immune_rds <- file.path(annotation_dir, "GSE189536_urine_style_annotated_immune_seurat.rds")
-harmony_tcell_rds <- file.path(annotation_dir, "GSE189536_urine_style_Tcell_harmony_reclustered_seurat.rds")
+fallback_immune_rds <- file.path(getOption("hla.data_root"), "gse189536", "Immune_annotated.rds")
+harmony_tcell_rds <- file.path(getOption("hla.data_root"), "gse189536", "Tcell_harmony.rds")
 figure_dir <- file.path(annotation_dir, "Figures", "Tcell_CXCR3_Marker")
 result_dir <- file.path(annotation_dir, "Tables", "Tcell_CXCR3_Marker")
 dir.create(figure_dir, recursive = TRUE, showWarnings = FALSE)

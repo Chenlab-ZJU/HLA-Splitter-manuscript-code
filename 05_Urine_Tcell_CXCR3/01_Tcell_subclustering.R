@@ -2,7 +2,7 @@
 # Purpose: Upstream T-cell annotation, repertoire, differential-expression and balanced ligand-receptor analysis.
 # Original source: 05_Tcell_subclustering.R
 # Figure/table scope: Fig5; FigS9; Supplementary Table 18; Methods CXCR3-axis analysis
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -16,7 +16,7 @@
 source(file.path(getOption("hla.code_root"), "04_Urine_immune_programs/01_setup_and_helpers.R"))
 #scRNA <- readRDS("./Result/Objects/Urine_scRNA.rds")
 # Read the saved object or source table used by this analysis.
-Tcell = readRDS("./Result/Objects/Urine_Tcell.rds")
+Tcell = readRDS(file.path(getOption("hla.data_root"), "urine", "Urine_Tcell.rds"))
 
 # ======================= B. T细胞 (Tcell) 分析 =======================
 Tcell = scRNA[,scRNA$Major_celltype %in% c("T cell", "NK-like", "Cycling")]
@@ -93,7 +93,7 @@ p_cell_ratio <- plot_cell_ratio_comparison(cell_subset = Tcell,
                                            write_to_csv = "./Result/Tcell_celltype_ratio", plot_colors = GLOBAL_COLORS)
 ggsave(fig_file("Tcell/Celltype_Composition", 3, "Celltype_Proportion_Group_Comparison"), p_cell_ratio, width = 10, height = 10)
 # Export the analysis source data for figure reproduction.
-saveRDS(Tcell, "./Result/Objects/Urine_Tcell.rds")
+saveRDS(Tcell, file.path(getOption("hla.data_root"), "urine", "Urine_Tcell.rds"))
 
 
 # ==============================================================================
@@ -134,7 +134,7 @@ p1 = plot_violin_comparison(seurat_obj = Tcell, group_col = "Group",
 ggsave(fig_file("Tcell/Differential_Expression", 2, "Marker_Genes_Group_Violin"), p1, height = 9, width = 8)
 
 # 保存
-saveRDS(Tcell,"./Result/Objects/Urine_Tcell.rds")
+saveRDS(Tcell,file.path(getOption("hla.data_root"), "urine", "Urine_Tcell.rds"))
 
 
 # ==============================================================================

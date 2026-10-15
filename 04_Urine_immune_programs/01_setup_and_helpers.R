@@ -2,7 +2,7 @@
 # Purpose: Upstream urine processing and sample-level signature analysis.
 # Original source: 00_setup_and_helpers.R
 # Figure/table scope: Fig4; FigS7; FigS8
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -14,7 +14,7 @@
 # Description: Shared paths, package loading, plotting style, and helper functions.
 # ===============================================================================
 
-PROJECT_DIR <- file.path(getOption("hla.data_root"), "\u5c3f\u6db2\u6837\u672c")
+PROJECT_DIR <- file.path(getOption("hla.data_root"), "urine")
 setwd(PROJECT_DIR)
 set.seed(2026)
 

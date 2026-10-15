@@ -2,7 +2,7 @@
 # Purpose: Upstream T-cell annotation, repertoire, differential-expression and balanced ligand-receptor analysis.
 # Original source: 07_Cell_communication.R
 # Figure/table scope: Fig5; FigS9; Supplementary Table 18; Methods CXCR3-axis analysis
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.

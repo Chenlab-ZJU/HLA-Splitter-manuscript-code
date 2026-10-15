@@ -2,7 +2,7 @@
 # Purpose: Final robust signature construction, scoring and cross-cohort evaluation.
 # Original source: 34_quick_cross_cohort_robust_signature_distribution_plots.R
 # Figure/table scope: Fig4i; Fig4j; FigS8a; FigS8b; FigS8c; FigS8d; FigS8e
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -25,7 +25,7 @@ if (nzchar(env_project_dir)) {
   stopifnot(dir.exists(env_project_dir))
   project_dir <- gsub("\\\\", "/", env_project_dir)
 } else {
-  project_dir <- file.path(getOption("hla.data_root"), "\u5c3f\u6db2\u6837\u672c")
+  project_dir <- file.path(getOption("hla.data_root"), "urine")
 }
 
 figure_dir <- file.path(project_dir, "Figures", "Signature_score_analysis", "Cross_cohort_robust_selection")
@@ -215,9 +215,9 @@ plot_contribution <- function(df, filename, width, height, n_top = NULL) {
 read_signature_deg_table <- function(project_dir) {
   deg_dir <- file.path(project_dir, "Result", "Signature_score_analysis", "Differential_Expression")
   files <- c(
-    TCMR = file.path(deg_dir, "scRNA_TCMR_DEG.csv"),
-    ABMR = file.path(deg_dir, "scRNA_ABMR_DEG.csv"),
-    BK = file.path(deg_dir, "scRNA_BK_DEG.csv")
+    TCMR = file.path(getOption("hla.data_root"), "urine", "scRNA_TCMR_DEG.csv"),
+    ABMR = file.path(getOption("hla.data_root"), "urine", "scRNA_ABMR_DEG.csv"),
+    BK = file.path(getOption("hla.data_root"), "urine", "scRNA_BK_DEG.csv")
   )
   bind_rows(lapply(names(files), function(sig) {
     if (!file.exists(files[[sig]])) return(tibble())
@@ -245,7 +245,7 @@ gene_module_for <- function(gene) {
 }
 
 message("Reading robust selected genes and urine object...")
-selected_genes_file <- file.path(result_dir, "Cross_cohort_robust_selected_genes.csv")
+selected_genes_file <- file.path(getOption("hla.data_root"), "urine", "Cross_cohort_robust_selected_genes.csv")
 if (!file.exists(selected_genes_file)) {
   stop("Missing selected gene table: ", selected_genes_file)
 }
@@ -254,7 +254,7 @@ selected_genes <- read.csv(selected_genes_file, stringsAsFactors = FALSE, check.
   filter(signature %in% signature_levels, !is.na(gene), gene != "") %>%
   arrange(factor(signature, levels = signature_levels), gene_rank)
 
-object_file <- file.path(project_dir, "Result", "Objects", "Urine_ALL.rds")
+object_file <- file.path(getOption("hla.data_root"), "urine", "Urine_ALL.rds")
 if (!file.exists(object_file)) {
   object_file <- file.path(project_dir, "Result", "Objects", "Urine_ALL_Intergrate.rds")
 }
@@ -341,7 +341,7 @@ if (length(selected_gene_sets) == 0) {
 }
 
 # Export the analysis source data for figure reproduction.
-write_csv_safe(augmented_gene_table, file.path(result_dir, "Cross_cohort_robust_augmented_rejection_gene_sets_used_revision.csv"))
+write_csv_safe(augmented_gene_table, file.path(getOption("hla.data_root"), "urine", "Cross_cohort_robust_augmented_rejection_gene_sets_used_revision.csv"))
 
 curated_requested_table <- curated_genes %>%
   mutate(present_in_urine_object = gene %in% features)

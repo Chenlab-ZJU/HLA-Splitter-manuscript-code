@@ -2,7 +2,7 @@
 # Purpose: Final BALF figures from saved objects and signatures.
 # Original source: 21_revision_lavage_tcell_signature_scatter_roc_contribution.R
 # Figure/table scope: Fig3b; Fig3c; Fig3d; Fig3e; Fig3f; Fig3g; Fig3h; Fig3i; FigS6a; FigS6b; FigS6c; FigS6d; FigS6e; FigS6f; FigS6g; FigS6h
-# Data cohort: 肺泡灌洗液. Inputs retain the original Data/Result hierarchy.
+# Data cohort: balf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -21,7 +21,7 @@ suppressPackageStartupMessages({
 
 project_dir <- Sys.getenv("LAVAGE_PROJECT_DIR", unset = NA_character_)
 if (is.na(project_dir) || !nzchar(project_dir)) {
-  project_dir <- file.path(getOption("hla.data_root"), "\u80ba\u6ce1\u704c\u6d17\u6db2")
+  project_dir <- file.path(getOption("hla.data_root"), "balf")
 }
 project_dir <- gsub("\\\\", "/", project_dir)
 result_dir <- file.path(project_dir, "Result")
@@ -68,8 +68,8 @@ theme_pub <- function(base_size = 9.5) {
     )
 }
 
-sample_score_path <- file.path(signature_dir, "Sample_Score.csv")
-geneset_path <- file.path(signature_dir, "Geneset.csv")
+sample_score_path <- file.path(getOption("hla.data_root"), "balf", "Sample_Score.csv")
+geneset_path <- file.path(getOption("hla.data_root"), "balf", "Geneset.csv")
 if (!file.exists(sample_score_path)) {
   stop("Missing Sample_Score.csv in Signature_score_analysis.")
 }

@@ -42,19 +42,31 @@ Install additional packages listed by the selected script; CellChat installation
 
 ## Data and paths
 
-Keep cohort folders under `Data/`: `Syn_data`, `30PBMC`, `4mix_PBMC`, `10X-dataset`, `脑脊液样本`, `肺泡灌洗液`, `尿液样本` and `GSE189536`. Preserve their existing input/result hierarchy.
-
-Inputs include HLA genotypes/counts, clinical metadata, annotated Seurat objects, VDJ annotations and summary tables. Required files are specified in each script and are not included in the code directory.
-
-Set these variables in your shell environment or `.Renviron`, replacing the example paths:
+The compact processed-data bundle is stored beside the code:
 
 ```text
-HLA_SPLITTER_PROJECT_ROOT=/path/to/project
-HLA_SPLITTER_DATA_ROOT=/path/to/project/Data
-HLA_SPLITTER_REVISION_ROOT=/path/to/project/Revison
+Revison/
+|-- Code/
+`-- Data/
+    |-- synthetic/                    # Benchmark source tables and HLA metadata
+    |-- pbmc30/                       # HLA typing, coverage and embedding source
+    |-- pbmc4/                        # Annotated mixture object and HLA metadata
+    |-- hash10x/                      # Annotated hashing object and HLA metadata
+    |-- csf/                          # Three annotated objects, metadata and source tables
+    |-- balf/                         # T-cell object, metadata, signatures and embedding source
+    |-- urine/                        # Three annotated objects, metadata and signature tables
+    |-- gse189536/                    # Immune_filtered, Immune_annotated and Tcell_harmony
+    |-- references/                   # GO biological-process gene sets
+    `-- data_manifest.csv
 ```
 
-Without explicit configuration, the runner assumes `project/Data` and `project/Revison/Code`.
+Each dataset has one flat directory containing its required input files. Objects retain expression data, annotations, embeddings and embedded metadata; separate sample/HLA metadata are also included. `data_manifest.csv` lists every input and its SHA256 checksum. Original-to-current paths are recorded in `validation/data_path_migration.csv`. Raw reads, large workspace backups and general intermediate files are excluded. Upstream preprocessing and signature optimization require additional original inputs.
+
+With `Code/` and `Data/` as sibling directories, the runner automatically uses this local data bundle. To use a relocated copy of the same compact layout, set the following variable in your shell environment or `.Renviron`:
+
+```text
+HLA_SPLITTER_DATA_ROOT=/path/to/Revison/Data
+```
 
 ## Running
 
@@ -62,6 +74,7 @@ From the code directory:
 
 ```sh
 Rscript run_analysis.R --list
+Rscript validate_data.R
 Rscript run_analysis.R --self-test
 Rscript run_analysis.R --check 03_BALF_Tcell_profiling/09_lavage_tcell_group_facet_umap.R
 Rscript run_analysis.R 03_BALF_Tcell_profiling/09_lavage_tcell_group_facet_umap.R
@@ -70,3 +83,5 @@ Rscript run_analysis.R 03_BALF_Tcell_profiling/09_lavage_tcell_group_facet_umap.
 Select an exact script path from `--list`. Run scripts individually and provide their upstream inputs; numbering is not an automatic execution order. Figure scripts can reuse saved objects/tables. Preflight checks verify function loading or syntax/directories, not complete analysis execution.
 
 Outputs include PDF/PNG figures and result tables, usually under the cohort's `Figures` and `Result` directories. Some workflows use nested `Tables` or revision-level output directories.
+
+`validation/compact_layout_runtime_check.csv` records runtime checks using the English input layout; `runtime_check.csv` retains the earlier validation. `workflow_coverage.csv` distinguishes downstream workflows from function/setup components and upstream scripts requiring additional inputs. `validate_data.R` verifies the bundled files and R syntax; add `--objects` to inspect single-cell object structure.

@@ -2,7 +2,7 @@
 # Purpose: Upstream BALF processing, repertoire and disease-signature computation.
 # Original source: lavage_find_signature.R
 # Figure/table scope: Fig3; FigS6; Supplementary Table 13
-# Data cohort: 肺泡灌洗液. Inputs retain the original Data/Result hierarchy.
+# Data cohort: balf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.

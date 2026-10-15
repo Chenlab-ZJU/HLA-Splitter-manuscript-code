@@ -2,7 +2,7 @@
 # Purpose: Final robust signature construction, scoring and cross-cohort evaluation.
 # Original source: 30_revision_signature_score_analysis_gene_contribution.R
 # Figure/table scope: Fig4i; Fig4j; FigS8a; FigS8b; FigS8c; FigS8d; FigS8e
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -127,9 +127,9 @@ read_deg <- function(file, signature_name = NULL, cluster_keep = NULL) {
 
 make_gene_sets <- function(features, max_genes = 150, min_genes = 10) {
   deg_all <- bind_rows(
-    read_deg(file.path(deg_dir, "scRNA_TCMR_DEG.csv"), signature_name = "TCMR", cluster_keep = "TCMR"),
-    read_deg(file.path(deg_dir, "scRNA_ABMR_DEG.csv"), signature_name = "ABMR", cluster_keep = "ABMR"),
-    read_deg(file.path(deg_dir, "scRNA_BK_DEG.csv"), signature_name = "BK", cluster_keep = "BK")
+    read_deg(file.path(getOption("hla.data_root"), "urine", "scRNA_TCMR_DEG.csv"), signature_name = "TCMR", cluster_keep = "TCMR"),
+    read_deg(file.path(getOption("hla.data_root"), "urine", "scRNA_ABMR_DEG.csv"), signature_name = "ABMR", cluster_keep = "ABMR"),
+    read_deg(file.path(getOption("hla.data_root"), "urine", "scRNA_BK_DEG.csv"), signature_name = "BK", cluster_keep = "BK")
   ) %>%
     filter(signature %in% signature_levels, gene %in% features) %>%
     group_by(signature, gene) %>%
@@ -278,7 +278,7 @@ optimize_signature_gene_sets <- function(gene_table, cells_rankings, meta_df, op
 
 object_candidates <- c(
   file.path(project_dir, "Result", "Objects", "Urine_scRNA.rds"),
-  file.path(project_dir, "Result", "Objects", "Urine_ALL.rds")
+  file.path(getOption("hla.data_root"), "urine", "Urine_ALL.rds")
 )
 object_file <- object_candidates[file.exists(object_candidates)][1]
 if (is.na(object_file)) stop("Cannot find Urine scRNA object in Result/Objects.")
@@ -295,8 +295,6 @@ sample_col <- if ("Sample" %in% meta_cols) "Sample" else if ("HLA_Splitter" %in%
 if (is.na(celltype_col) || !"Group" %in% meta_cols) stop("The object needs Group and celltype metadata.")
 
 expr <- GetAssayData(scRNA, assay = "RNA", layer = "data")
-initial_gene_sets <- make_gene_sets(rownames(expr), max_genes = 150)
-initial_gene_table <- attr(initial_gene_sets, "gene_table")
 message("Building AUCell rankings.")
 cells_rankings <- AUCell_buildRankings(expr, plotStats = FALSE, splitByBlocks = TRUE, verbose = FALSE)
 
@@ -307,14 +305,31 @@ optimization_meta <- scRNA@meta.data %>%
     Sample = as.character(.data[[sample_col]]),
     Group = as.character(Group)
   )
-gene_sets <- optimize_signature_gene_sets(initial_gene_table, cells_rankings, optimization_meta, optimize_signatures = c("TCMR", "BK"))
-# Export the analysis source data for figure reproduction.
-write_csv_safe(attr(gene_sets, "candidate_performance"), file.path(result_dir, "Revision_gene_contribution", "Signature_gene_set_optimization_candidates_revision.csv"))
-write_csv_safe(attr(gene_sets, "selected_performance"), file.path(result_dir, "Revision_gene_contribution", "Signature_gene_set_optimization_selected_revision.csv"))
+gene_set_source <- file.path(getOption("hla.data_root"), "urine", "Signature_gene_sets_used_revision.csv")
+recompute_sets <- tolower(Sys.getenv("HLA_RECOMPUTE_SIGNATURES", "false")) %in% c("true", "1", "yes")
+if (file.exists(gene_set_source) && !recompute_sets) {
+  # Reproduce the existing selected signatures without repeating the candidate search.
+  cached_genes <- read.csv(gene_set_source, stringsAsFactors = FALSE, check.names = FALSE)
+  stopifnot(all(c("signature", "gene", "gene_rank") %in% names(cached_genes)))
+  cached_genes <- cached_genes %>% arrange(signature, gene_rank)
+  gene_sets <- split(cached_genes$gene, cached_genes$signature)
+  gene_sets <- gene_sets[signature_levels[signature_levels %in% names(gene_sets)]]
+  names(gene_sets) <- paste0(names(gene_sets), "_Signature_AUC")
+  attr(gene_sets, "gene_table") <- cached_genes
+  message("Using saved selected signature genes: ", gene_set_source)
+} else {
+  initial_gene_sets <- make_gene_sets(rownames(expr), max_genes = 150)
+  initial_gene_table <- attr(initial_gene_sets, "gene_table")
+  gene_sets <- optimize_signature_gene_sets(initial_gene_table, cells_rankings, optimization_meta, optimize_signatures = c("TCMR", "BK"))
+  write_csv_safe(attr(gene_sets, "candidate_performance"), file.path(result_dir, "Revision_gene_contribution", "Signature_gene_set_optimization_candidates_revision.csv"))
+  write_csv_safe(attr(gene_sets, "selected_performance"), file.path(result_dir, "Revision_gene_contribution", "Signature_gene_set_optimization_selected_revision.csv"))
+}
 
 gene_table <- attr(gene_sets, "gene_table") %>%
   mutate(signature = as.character(signature), signature_auc = paste0(signature, "_Signature_AUC"))
-write_csv_safe(gene_table, file.path(result_dir, "Revision_gene_contribution", "Signature_gene_sets_used_revision.csv"))
+if (!file.exists(gene_set_source) || recompute_sets) {
+  write_csv_safe(gene_table, gene_set_source)
+}
 
 gene_set_summary <- gene_table %>%
   group_by(signature, signature_auc, optimized_ranking_method, optimized_n_genes, optimized_sample_auc) %>%

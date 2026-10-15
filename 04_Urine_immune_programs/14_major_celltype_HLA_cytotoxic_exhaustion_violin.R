@@ -2,7 +2,7 @@
 # Purpose: Final urine immune-cell composition, module and demultiplexing figures.
 # Original source: 29_revision_major_celltype_HLA_cytotoxic_exhaustion_violin.R
 # Figure/table scope: Fig4b; Fig4c; Fig4d; Fig4e; Fig4f; Fig4g; Fig4h; FigS7a; FigS7b; FigS7c; FigS7d; FigS7e
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -112,7 +112,7 @@ safe_wilcox <- function(v1, v2) {
   suppressWarnings(wilcox.test(v1, v2, exact = FALSE)$p.value)
 }
 
-object_path <- file.path(project_dir, "Result", "Objects", "Urine_ALL.rds")
+object_path <- file.path(getOption("hla.data_root"), "urine", "Urine_ALL.rds")
 if (!file.exists(object_path)) {
   object_path <- file.path(project_dir, "Result", "Objects", "Urine_Allcells.rds")
 }

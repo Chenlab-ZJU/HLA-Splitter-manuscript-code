@@ -3,6 +3,10 @@
 # The runner never installs packages or reruns upstream analyses automatically.
 
 main <- function() {
+  # Use UTF-8 when the parent project directory contains non-ASCII characters.
+  if (.Platform$OS.type == "windows" && !isTRUE(l10n_info()[["UTF-8"]])) {
+    suppressWarnings(Sys.setlocale("LC_CTYPE", "English_United States.utf8"))
+  }
   file_arg <- grep("^--file=", commandArgs(FALSE), value = TRUE)
   script <- sub("^--file=", "", file_arg[[1]])
   if (!grepl("^(/|[A-Za-z]:)", script)) script <- file.path(getwd(), script)
@@ -57,7 +61,9 @@ main <- function() {
   if (nrow(row) != 1L) stop("Select a script listed by --list: ", target)
   revision_root <- Sys.getenv("HLA_SPLITTER_REVISION_ROOT", dirname(code_root))
   project_root <- Sys.getenv("HLA_SPLITTER_PROJECT_ROOT", dirname(revision_root))
-  data_root <- Sys.getenv("HLA_SPLITTER_DATA_ROOT", file.path(project_root, "Data"))
+  bundled_data <- file.path(revision_root, "Data")
+  default_data <- if (dir.exists(bundled_data)) bundled_data else file.path(project_root, "Data")
+  data_root <- Sys.getenv("HLA_SPLITTER_DATA_ROOT", default_data)
   data_root <- gsub("\\\\", "/", data_root)
   if (!dir.exists(data_root)) stop("Missing HLA_SPLITTER_DATA_ROOT: ", data_root)
   cohort_dir <- file.path(data_root, row$cohort[[1]])
@@ -67,10 +73,10 @@ main <- function() {
           hla.project_root = project_root, hla.revision_root = revision_root,
           hla.cohort_dir = cohort_dir, hla.script = target)
   # Environment names preserve the input configuration used by the original scripts.
-  vars <- c(SYN_PROJECT_DIR = "Syn_data", CSF_PROJECT_DIR = "脑脊液样本",
-            LAVAGE_PROJECT_DIR = "肺泡灌洗液", URINE_PROJECT_DIR = "尿液样本",
-            GSE189536_PROJECT_DIR = "GSE189536", GSE189536_DATA_DIR = "GSE189536",
-            PBMC_PROJECT_DIR = "30PBMC")
+  vars <- c(SYN_PROJECT_DIR = "synthetic", CSF_PROJECT_DIR = "csf",
+            LAVAGE_PROJECT_DIR = "balf", URINE_PROJECT_DIR = "urine",
+            GSE189536_PROJECT_DIR = "gse189536", GSE189536_DATA_DIR = "gse189536",
+            PBMC_PROJECT_DIR = "pbmc30")
   do.call(Sys.setenv, as.list(setNames(file.path(data_root, vars), names(vars))))
   Sys.setenv(REVISION_PROJECT_DIR = revision_root)
   file <- file.path(code_root, target)
@@ -79,6 +85,10 @@ main <- function() {
     cat("PASS: selected script parses; cohort directory and path configuration exist.\n")
     cat("This preflight does not validate every dynamic input or execute the analysis.\n")
     return(invisible(NULL))
+  }
+  # Input-only bundles do not contain the output folders assumed by older scripts.
+  for (folder in c("Figures", "Result")) {
+    dir.create(file.path(cohort_dir, folder), recursive = TRUE, showWarnings = FALSE)
   }
   setwd(cohort_dir)
   set.seed(2026)

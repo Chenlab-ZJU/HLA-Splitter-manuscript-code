@@ -2,7 +2,7 @@
 # Purpose: Final urine T-cell, CXCR3 and expanded-clone figures.
 # Original source: 31_revision_tcell_celltype_umap_TCMR_ABMR_facet.R
 # Figure/table scope: Fig5a; Fig5b; Fig5c; Fig5d; Fig5e; Fig5f; Fig5g; Fig5h; Fig5i; FigS9a; FigS9b; FigS9c; FigS9d; FigS9e; FigS9f; FigS9g
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -28,7 +28,7 @@ if (nzchar(env_project_dir)) {
 project_dir <- getOption("hla.cohort_dir")
 }
 
-object_file <- file.path(project_dir, "Result", "Objects", "Urine_Tcell.rds")
+object_file <- file.path(getOption("hla.data_root"), "urine", "Urine_Tcell.rds")
 figure_dir <- file.path(project_dir, "Figures", "Tcell", "UMAP_Markers")
 result_dir <- file.path(project_dir, "Result", "Tcell", "UMAP_Markers")
 composition_figure_dir <- file.path(project_dir, "Figures", "Tcell", "Celltype_Composition")

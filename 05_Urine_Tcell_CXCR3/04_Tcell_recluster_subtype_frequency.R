@@ -3,7 +3,7 @@
 # Purpose: Upstream T-cell annotation, repertoire, differential-expression and balanced ligand-receptor analysis.
 # Original source: 19_revision_Tcell_recluster_subtype_frequency.R
 # Figure/table scope: Fig5; FigS9; Supplementary Table 18; Methods CXCR3-axis analysis
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -34,7 +34,7 @@ get_script_dir <- function() {
 }
 
 script_dir <- get_script_dir()
-urine_dir <- normalizePath(file.path(script_dir, ".."), winslash = "/", mustWork = TRUE)
+urine_dir <- getOption("hla.cohort_dir")
 result_dir <- file.path(urine_dir, "Result", "Reviewer_Tcell_ABMR_TCMR")
 figure_dir <- file.path(urine_dir, "Figures", "Reviewer_Tcell_ABMR_TCMR", "Tcell_recluster_subtype_frequency")
 table_dir <- file.path(result_dir, "Tcell_recluster_subtype_frequency")
@@ -83,7 +83,7 @@ safe_wilcox <- function(x, g) {
 }
 
 message("Loading reclustered T-cell object...")
-tcell_file <- file.path(result_dir, "Tcell_only_ABMR_TCMR_reclustered.rds")
+tcell_file <- file.path(getOption("hla.data_root"), "urine", "Tcell_only_ABMR_TCMR_reclustered.rds")
 if (!file.exists(tcell_file)) {
   stop("Cannot find reclustered T-cell object: ", tcell_file)
 }

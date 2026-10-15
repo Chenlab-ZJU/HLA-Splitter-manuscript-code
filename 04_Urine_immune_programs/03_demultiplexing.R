@@ -2,7 +2,7 @@
 # Purpose: Upstream urine processing and sample-level signature analysis.
 # Original source: 02_demultiplexing.R
 # Figure/table scope: Fig4; FigS7; FigS8
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.

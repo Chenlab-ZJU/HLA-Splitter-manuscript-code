@@ -2,7 +2,7 @@
 # Purpose: Final robust signature construction, scoring and cross-cohort evaluation.
 # Original source: 35_cross_cohort_signature_gene_expression_correlation.R
 # Figure/table scope: Fig4i; Fig4j; FigS8a; FigS8b; FigS8c; FigS8d; FigS8e
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -20,9 +20,9 @@ suppressPackageStartupMessages({
 })
 
 env_project_dir <- Sys.getenv("URINE_PROJECT_DIR", unset = "")
-project_dir <- if (nzchar(env_project_dir)) gsub("\\\\", "/", env_project_dir) else file.path(getOption("hla.data_root"), "\u5c3f\u6db2\u6837\u672c")
+project_dir <- if (nzchar(env_project_dir)) gsub("\\\\", "/", env_project_dir) else file.path(getOption("hla.data_root"), "urine")
 env_gse_dir <- Sys.getenv("GSE189536_PROJECT_DIR", unset = "")
-gse_dir <- if (nzchar(env_gse_dir)) gsub("\\\\", "/", env_gse_dir) else file.path(getOption("hla.data_root"), "GSE189536")
+gse_dir <- if (nzchar(env_gse_dir)) gsub("\\\\", "/", env_gse_dir) else file.path(getOption("hla.data_root"), "gse189536")
 
 figure_dir <- file.path(project_dir, "Figures", "Signature_score_analysis")
 result_dir <- file.path(project_dir, "Result", "Signature_score_analysis", "Cross_cohort_robust_selection")
@@ -164,9 +164,9 @@ gene_label_layer <- function(label_df, size = 2.35) {
 }
 
 message("Reading augmented robust signature genes...")
-gene_file <- file.path(result_dir, "Cross_cohort_robust_augmented_rejection_gene_sets_used_revision.csv")
+gene_file <- file.path(getOption("hla.data_root"), "urine", "Cross_cohort_robust_augmented_rejection_gene_sets_used_revision.csv")
 if (!file.exists(gene_file)) {
-  gene_file <- file.path(result_dir, "Cross_cohort_robust_selected_genes.csv")
+  gene_file <- file.path(getOption("hla.data_root"), "urine", "Cross_cohort_robust_selected_genes.csv")
 }
 # Read the saved object or source table used by this analysis.
 gene_table <- read.csv(gene_file, stringsAsFactors = FALSE, check.names = FALSE) %>%
@@ -175,9 +175,9 @@ gene_table <- read.csv(gene_file, stringsAsFactors = FALSE, check.names = FALSE)
 signature_score_genes <- unique(gene_table$gene)
 
 message("Reading urine and GSE189536 immune objects...")
-urine_file <- file.path(project_dir, "Result", "Objects", "Urine_ALL.rds")
+urine_file <- file.path(getOption("hla.data_root"), "urine", "Urine_ALL.rds")
 urine <- readRDS(urine_file)
-gse_file <- file.path(gse_dir, "Harmony_immune_cells_manual_annotation_results", "GSE189536_manual_annotation_immune_filtered_seurat.rds")
+gse_file <- file.path(getOption("hla.data_root"), "gse189536", "Immune_filtered.rds")
 gse <- readRDS(gse_file)
 
 urine_group_col <- "Group"

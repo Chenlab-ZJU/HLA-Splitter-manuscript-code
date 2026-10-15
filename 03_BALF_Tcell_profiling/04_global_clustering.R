@@ -2,7 +2,7 @@
 # Purpose: Upstream BALF processing, repertoire and disease-signature computation.
 # Original source: 03_global_clustering.R
 # Figure/table scope: Fig3; FigS6; Supplementary Table 13
-# Data cohort: 肺泡灌洗液. Inputs retain the original Data/Result hierarchy.
+# Data cohort: balf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -22,7 +22,7 @@ scRNA_Intergrate = readRDS("Result/lavage_scRNA_Intergrate.rds")
 
 # 1. 数据筛选与重新聚类 --------------------------------------------------------
 scRNA <- subset(scRNA_Intergrate, subset = !HLA_Splitter %in% c("Doublets", "Undefined"))
-SampleInfo <- read.csv("./Data/SampleInfo.csv")
+SampleInfo <- read.csv(file.path(getOption("hla.data_root"), "balf", "SampleInfo.csv"))
 Sample_levels <- c(mixedsort(SampleInfo$Patient.ID))
 scRNA$Group = factor(scRNA$Group, setdiff(scRNA$Group,c("Undefined","Doublet")))
 # 过滤细胞数小于50的样本
@@ -97,12 +97,12 @@ ggsave("./Figures/Tcell_celltype_compare.pdf", p_cell_ratio, width = 10, height 
 
 #保存
 # Export the analysis source data for figure reproduction.
-saveRDS(Tcell, "./Result/lavage_Tcell.rds")
+saveRDS(Tcell, file.path(getOption("hla.data_root"), "balf", "lavage_Tcell.rds"))
 
 # ==============================================================================
 # Description: 细胞组成比例对比、组间差异表达及富集分析
 # ==============================================================================
-Tcell = readRDS("./Result/lavage_Tcell.rds")
+Tcell = readRDS(file.path(getOption("hla.data_root"), "balf", "lavage_Tcell.rds"))
 Tcell = Tcell[,Tcell$Group!= "Others"]
 
 comparison <- list(c("CAP","LC"), c("CAP","ILD"), c("ILD","LC"))

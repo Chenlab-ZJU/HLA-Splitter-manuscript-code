@@ -2,7 +2,7 @@
 # Purpose: Upstream BALF processing, repertoire and disease-signature computation.
 # Original source: 04_tcr_repertoire.R
 # Figure/table scope: Fig3; FigS6; Supplementary Table 13
-# Data cohort: 肺泡灌洗液. Inputs retain the original Data/Result hierarchy.
+# Data cohort: balf. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -21,7 +21,7 @@ source(file.path(getOption("hla.code_root"), "03_BALF_Tcell_profiling/01_setup_a
 
 # Read the saved object or source table used by this analysis.
 Tcell <- readRDS("./Result/lavage_Tcell_Scored.rds")
-Sample_Info <- read.csv("./Data/SampleInfo.csv")
+Sample_Info <- read.csv(file.path(getOption("hla.data_root"), "balf", "SampleInfo.csv"))
 
 # 1. 整合TCR到seurat中 (scRepertoire & scCustomize) ----------------------------
 contig_all <- data.frame()

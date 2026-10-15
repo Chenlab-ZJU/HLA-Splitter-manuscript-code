@@ -3,7 +3,7 @@
 # Purpose: External Harmony annotation and final CXCR3/module validation.
 # Original source: annotate_GSE189536_immune_like_urine.R
 # Figure/table scope: FigS10a; FigS10b; FigS10c; FigS10d; FigS10e; FigS10f
-# Data cohort: GSE189536. Inputs retain the original Data/Result hierarchy.
+# Data cohort: gse189536. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -36,9 +36,9 @@ if (nzchar(env_data_dir)) {
   script_dir <- if (length(file_arg) > 0) {
     dirname(normalizePath(sub("^--file=", "", file_arg[1]), winslash = "/", mustWork = FALSE))
   } else {
-    file.path(getOption("hla.data_root"), "GSE189536")
+    file.path(getOption("hla.data_root"), "gse189536")
   }
-  if (!dir.exists(script_dir)) script_dir <- file.path(getOption("hla.data_root"), "GSE189536")
+  if (!dir.exists(script_dir)) script_dir <- file.path(getOption("hla.data_root"), "gse189536")
   data_dir <- normalizePath(script_dir, winslash = "/", mustWork = TRUE)
 }
 manual_dir <- file.path(data_dir, "Harmony_immune_cells_manual_annotation_results")
@@ -48,7 +48,7 @@ tab_dir <- file.path(out_dir, "Tables")
 dir.create(fig_dir, recursive = TRUE, showWarnings = FALSE)
 dir.create(tab_dir, recursive = TRUE, showWarnings = FALSE)
 
-input_rds <- file.path(manual_dir, "GSE189536_manual_annotation_immune_filtered_seurat.rds")
+input_rds <- file.path(getOption("hla.data_root"), "gse189536", "Immune_filtered.rds")
 
 major_levels <- c("CD4+ T", "CD8+ T", "Cycling T", "NK", "B cell", "Monocyte", "Macrophage", "Neutrophil", "cDC", "pDC")
 urine_revised_levels <- c(
@@ -352,7 +352,7 @@ composition_by_group <- cell_metadata %>%
   ungroup()
 write_csv_safe(composition_by_group, file.path(tab_dir, "GSE189536_urine_style_major_celltype_composition_by_biopsy.csv"))
 
-saveRDS(obj, file.path(out_dir, "GSE189536_urine_style_annotated_immune_seurat.rds"))
+saveRDS(obj, file.path(getOption("hla.data_root"), "gse189536", "Immune_annotated.rds"))
 
 if (!"umap" %in% names(obj@reductions)) stop("UMAP reduction is missing in the input object.")
 umap_df <- Embeddings(obj, "umap") %>%
@@ -416,7 +416,7 @@ if (length(tcell_cells) < 50) {
     reduction.key = "tHUMAP_",
     verbose = FALSE
   )
-  saveRDS(tobj, file.path(out_dir, "GSE189536_urine_style_Tcell_harmony_reclustered_seurat.rds"))
+  saveRDS(tobj, file.path(getOption("hla.data_root"), "gse189536", "Tcell_harmony.rds"))
 
   t_umap <- Embeddings(tobj, "tcell_harmony_umap") %>%
     as.data.frame() %>%
@@ -499,5 +499,5 @@ p_dot <- DotPlot(obj, features = dot_markers, group.by = "Urine_revised_celltype
   )
 save_plot(p_dot, "GSE189536_urine_style_annotation_marker_dotplot", width = 8.8, height = 4.8)
 
-message("Saved urine-style annotated object: ", file.path(out_dir, "GSE189536_urine_style_annotated_immune_seurat.rds"))
+message("Saved urine-style annotated object: ", file.path(getOption("hla.data_root"), "gse189536", "Immune_annotated.rds"))
 message("Saved tables and figures to: ", out_dir)

@@ -2,7 +2,7 @@
 # Purpose: Final urine T-cell, CXCR3 and expanded-clone figures.
 # Original source: 28_revision_tcell_group_DEG_module_heatmap_score.R
 # Figure/table scope: Fig5a; Fig5b; Fig5c; Fig5d; Fig5e; Fig5f; Fig5g; Fig5h; Fig5i; FigS9a; FigS9b; FigS9c; FigS9d; FigS9e; FigS9f; FigS9g
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -143,7 +143,7 @@ pairwise_wilcox <- function(df, value_col = "module_score", facet_col = "module"
     mutate(p.adjust = p.adjust(p.value, method = "BH"))
 }
 
-object_path <- file.path(project_dir, "Result", "Objects", "Urine_Tcell.rds")
+object_path <- file.path(getOption("hla.data_root"), "urine", "Urine_Tcell.rds")
 if (!file.exists(object_path)) {
   stop("Cannot find urine T-cell object: ", object_path)
 }
@@ -184,7 +184,7 @@ if (nrow(tcell_marker_df) == 0) {
   stop("None of the selected T-cell key genes were found in the urine T-cell object.")
 }
 
-deg_file <- file.path(project_dir, "Result", "Tcell", "Differential_Expression", "Tcell_Group_DEG.csv")
+deg_file <- file.path(getOption("hla.data_root"), "urine", "Tcell_Group_DEG.csv")
 if (file.exists(deg_file)) {
   old_deg_raw <- read.csv(deg_file, stringsAsFactors = FALSE, check.names = FALSE)
   old_deg_raw <- old_deg_raw[, nzchar(names(old_deg_raw)), drop = FALSE]

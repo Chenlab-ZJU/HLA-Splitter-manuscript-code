@@ -3,7 +3,7 @@
 # Purpose: External Harmony annotation and final CXCR3/module validation.
 # Original source: run_GSE189536_revision_rejection_axis_validation.R
 # Figure/table scope: FigS10a; FigS10b; FigS10c; FigS10d; FigS10e; FigS10f
-# Data cohort: GSE189536. Inputs retain the original Data/Result hierarchy.
+# Data cohort: gse189536. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -108,19 +108,16 @@ save_pub_plot <- function(plot, stem, width, height) {
 }
 
 script_dir <- get_script_dir()
-data_dir <- normalizePath(script_dir, winslash = "/", mustWork = TRUE)
+data_dir <- getOption("hla.cohort_dir")
 manual_dir <- file.path(data_dir, "Harmony_immune_cells_manual_annotation_results")
-input_rds <- file.path(manual_dir, "GSE189536_manual_annotation_immune_filtered_seurat.rds")
+input_rds <- file.path(getOption("hla.data_root"), "gse189536", "Immune_filtered.rds")
 result_dir <- file.path(data_dir, "Revision_rejection_axis_validation")
 figure_dir <- file.path(result_dir, "Figures")
 table_dir <- file.path(result_dir, "Tables")
-submit_code_dir <- file.path(normalizePath(file.path(data_dir, "..", ".."), winslash = "/", mustWork = TRUE),
-                             "Revison", "Code", "08_External_validation_GSE189536")
 
 dir.create(result_dir, recursive = TRUE, showWarnings = FALSE)
 dir.create(figure_dir, recursive = TRUE, showWarnings = FALSE)
 dir.create(table_dir, recursive = TRUE, showWarnings = FALSE)
-dir.create(submit_code_dir, recursive = TRUE, showWarnings = FALSE)
 
 group_levels <- c("NR", "TCMR", "ABMR", "Mix")
 group_colors <- c("NR" = "#E42320", "TCMR" = "#699ECA", "ABMR" = "#4DAF4A", "Mix" = "#FF8C00")

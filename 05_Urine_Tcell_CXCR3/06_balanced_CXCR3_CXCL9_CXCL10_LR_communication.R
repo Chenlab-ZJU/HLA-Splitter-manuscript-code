@@ -3,7 +3,7 @@
 # Purpose: Upstream T-cell annotation, repertoire, differential-expression and balanced ligand-receptor analysis.
 # Original source: 17_revision_balanced_CXCR3_CXCL9_CXCL10_LR_communication.R
 # Figure/table scope: Fig5; FigS9; Supplementary Table 18; Methods CXCR3-axis analysis
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -85,9 +85,9 @@ save_panel <- function(plot, stem, width, height) {
 }
 
 script_dir <- get_script_dir()
-urine_dir <- normalizePath(file.path(script_dir, ".."), winslash = "/", mustWork = TRUE)
-project_dir <- normalizePath(file.path(urine_dir, "..", ".."), winslash = "/", mustWork = TRUE)
-revision_dir <- file.path(project_dir, "Revision")
+urine_dir <- getOption("hla.cohort_dir")
+project_dir <- getOption("hla.project_root")
+revision_dir <- getOption("hla.revision_root")
 out_dir <- file.path(revision_dir, "revised figure")
 table_dir <- file.path(out_dir, "tables")
 panel_dir <- file.path(out_dir, "panels", "Balanced_CXCR3_CXCL9_CXCL10_LR_communication")
@@ -109,12 +109,12 @@ message("Loading urine all-cell and T-cell objects...")
 all_cells <- read_first_existing_rds(c(
   file.path(urine_dir, "Result", "Objects", "Urine_scRNA.rds"),
   file.path(urine_dir, "Result", "Objects", "Urine_Allcells.rds"),
-  file.path(urine_dir, "Result", "Objects", "Urine_ALL.rds"),
+  file.path(getOption("hla.data_root"), "urine", "Urine_ALL.rds"),
   file.path(urine_dir, "Result", "Objects", "Urine_ALL_Intergrate.rds")
 ))
 tcell <- read_first_existing_rds(c(
-  file.path(urine_dir, "Result", "Objects", "Urine_Tcell.rds"),
-  file.path(urine_dir, "Result", "Urine_Tcell.rds")
+  file.path(getOption("hla.data_root"), "urine", "Urine_Tcell.rds"),
+  file.path(getOption("hla.data_root"), "urine", "Urine_Tcell.rds")
 ))
 DefaultAssay(all_cells) <- "RNA"
 DefaultAssay(tcell) <- "RNA"

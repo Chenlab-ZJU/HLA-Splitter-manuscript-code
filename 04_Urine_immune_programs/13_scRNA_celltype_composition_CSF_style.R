@@ -2,7 +2,7 @@
 # Purpose: Final urine immune-cell composition, module and demultiplexing figures.
 # Original source: 25_revision_scRNA_celltype_composition_CSF_style.R
 # Figure/table scope: Fig4b; Fig4c; Fig4d; Fig4e; Fig4f; Fig4g; Fig4h; FigS7a; FigS7b; FigS7c; FigS7d; FigS7e
-# Data cohort: 尿液样本. Inputs retain the original Data/Result hierarchy.
+# Data cohort: urine. Inputs use the compact English data layout.
 # Run with run_analysis.R; configure HLA_SPLITTER_DATA_ROOT before execution.
 # Input objects, metadata and source tables are read from the configured cohort.
 # Outputs: files written by this script under the cohort Figures/Result directories.
@@ -120,7 +120,7 @@ save_plot_safe <- function(plot, filename, width, height) {
   invisible(c(pdf = target_pdf, png = target_png))
 }
 
-object_path <- file.path(project_dir, "Result", "Objects", "Urine_ALL.rds")
+object_path <- file.path(getOption("hla.data_root"), "urine", "Urine_ALL.rds")
 if (!file.exists(object_path)) {
   object_path <- file.path(project_dir, "Result", "Objects", "Urine_Allcells.rds")
 }
